@@ -1,0 +1,1 @@
+call java -cp lib/* com.bulletbalance.DemoLauncher
