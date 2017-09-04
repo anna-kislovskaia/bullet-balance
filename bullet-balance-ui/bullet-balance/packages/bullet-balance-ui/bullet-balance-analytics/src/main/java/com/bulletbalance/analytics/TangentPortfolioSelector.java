@@ -1,6 +1,7 @@
 package com.bulletbalance.analytics;
 
 import com.bulletbalance.utils.MathUtils;
+import com.sun.istack.internal.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,7 @@ public class TangentPortfolioSelector implements AllocationResultSelector {
 	}
 
 	@Override
+	@Nullable
 	public AllocationResult selectResult(List<AllocationResult> results) {
 		System.out.println(String.format("Risk free rate %f9", riskFreeRate));
 		int size = results.size();
