@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  * Not thread-safe
  */
 public class AllocationSamplesGenerator {
-	private int samplesCount = 100_000;
+	private int samplesCount = 500_000;
 	private RandomWeightsGenerator weightsGenerator;
 	private Portfolio portfolio;
 

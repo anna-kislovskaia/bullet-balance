@@ -15,6 +15,7 @@
 		<fileSet>
 			<directory>src/assembly/unix</directory>
 			<outputDirectory>/</outputDirectory>
+			<lineEnding>unix</lineEnding>
 			<fileMode>0555</fileMode>
 		</fileSet>
 	</fileSets>
