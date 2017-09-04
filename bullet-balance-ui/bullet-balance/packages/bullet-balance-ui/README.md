@@ -7,8 +7,9 @@ Features coming
 - Support of allocations with asset short sells
 - Support of allocation strategy by criteria: takes afordable risk and desired return 
 - Visualization of allocation strategies:
--- Least risky
--- Markowitz Tangent
--- Desired risk/return
+** Least risky
+** Markowitz Tangent
+** Desired risk/return
+- Price history loading from external sources: Yahoo finance
 
 
