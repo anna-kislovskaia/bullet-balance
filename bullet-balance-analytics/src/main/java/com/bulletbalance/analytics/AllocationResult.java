@@ -1,47 +1,47 @@
 package com.bulletbalance.analytics;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sun.istack.internal.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NonNull;
+
 import java.math.BigDecimal;
 import java.util.Comparator;
 
 /**
- * Sample of asset allocation weights
+ * Sample of asset weights weights
  */
+@AllArgsConstructor
+@Data
 public class AllocationResult {
 	public static Comparator<AllocationResult> RISK_COMPARATOR = (r1, r2) -> {
-		int result = Double.compare(r1.allocationStd, r2.allocationStd);
+		int result = Double.compare(r1.weigthedRisk, r2.weigthedRisk);
 		if (result == 0) {
-			return Double.compare(r1.allocationReturn, r2.allocationReturn);
+			return Double.compare(r1.weightedReturn, r2.weightedReturn);
 		}
 		return result;
 	};
 
-	private final BigDecimal[] allocation;
-	private final double allocationReturn;
-	private final double allocationStd;
+	@NotNull
+	@NonNull
+	@JsonProperty
+	private final BigDecimal[] weights;
+	@NotNull
+	@NonNull
+	@JsonProperty
+	private final double weightedReturn;
 
-	public AllocationResult(BigDecimal[] allocation, double allocationReturn, double allocationStd) {
-		this.allocation = allocation;
-		this.allocationReturn = allocationReturn;
-		this.allocationStd = allocationStd;
-	}
-
-	public BigDecimal[] getAllocation() {
-		return allocation;
-	}
-
-	public double getAllocationReturn() {
-		return allocationReturn;
-	}
-
-	public double getAllocationStd() {
-		return allocationStd;
-	}
+	@NotNull
+	@NonNull
+	@JsonProperty
+	private final double weigthedRisk;
 
 	@Override
 	public String toString() {
 		return "AllocationResult{" +
-				"return=" + allocationReturn +
-				", risk=" + allocationStd +
+				"return=" + weightedReturn +
+				", risk=" + weigthedRisk +
 				'}';
 	}
 }
