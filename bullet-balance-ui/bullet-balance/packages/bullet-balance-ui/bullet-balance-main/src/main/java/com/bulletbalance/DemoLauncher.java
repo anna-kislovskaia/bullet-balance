@@ -43,11 +43,11 @@ public class DemoLauncher {
 		if (result == null) {
 			System.out.println(String.format("%s produced no results", dislayName));
 		} else {
-			double annualRate = PortfolioUtils.convertDailyRateToAnnual(result.getAllocationReturn());
+			double annualRate = PortfolioUtils.convertDailyRateToAnnual(result.getWeightedReturn());
 
 			System.out.println(String.format("%s allocation is %s, annual return %f", dislayName, result.toString(), annualRate));
 			System.out.println(portfolio.getAssetKeys());
-			System.out.println(Arrays.toString(result.getAllocation()));
+			System.out.println(Arrays.toString(result.getWeights()));
 		}
 	}
 }

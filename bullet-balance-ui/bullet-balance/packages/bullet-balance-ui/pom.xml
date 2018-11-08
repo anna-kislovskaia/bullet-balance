@@ -12,6 +12,10 @@
 	<properties>
 		<junit.version>4.12</junit.version>
 		<jsr305.version>3.0.1</jsr305.version>
+		<spring.version>5.1.2.RELEASE</spring.version>
+		<spring.boot.version>2.1.0.RELEASE</spring.boot.version>
+		<lombok.version>1.16.18</lombok.version>
+		<jackson.version>2.9.7</jackson.version>
 	</properties>
 
     <modules>
@@ -19,6 +23,7 @@
         <module>bullet-balance-analytics</module>
         <module>bullet-balance-portfolio</module>
 		<module>bullet-balance-setup</module>
+		<module>bullet-balance-webapp</module>
 	</modules>
 
     <build>
