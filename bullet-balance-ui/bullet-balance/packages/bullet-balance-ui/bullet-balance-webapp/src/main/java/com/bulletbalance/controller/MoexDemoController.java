@@ -12,9 +12,11 @@ import com.bulletbalance.utils.PortfolioUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/demo/moex")
@@ -28,8 +30,9 @@ public class MoexDemoController {
     }
 
     @GetMapping(value = "/sample", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public TangentPortfolioAnalytics getSampleAllocations() {
+    public TangentPortfolioAnalytics getSampleAllocations(@RequestParam Optional<Integer> sampleCount) {
         AllocationSamplesGenerator analyzer = new AllocationSamplesGenerator();
+        analyzer.setSamplesCount(sampleCount.orElseGet(() -> 10_000));
         analyzer.setWeightsGenerator(new NoShortSellWeightsGenerator());
         final Portfolio<String> portfolio = MoexDemo.createPortfolio();
         analyzer.setPortfolio(portfolio);
