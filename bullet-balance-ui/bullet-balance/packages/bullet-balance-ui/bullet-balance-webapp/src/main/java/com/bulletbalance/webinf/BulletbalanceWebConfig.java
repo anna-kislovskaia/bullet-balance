@@ -18,7 +18,7 @@ import java.util.List;
 
 @Configuration
 @Log4j2
-public class BulletbalanceConfig implements WebMvcConfigurer {
+public class BulletbalanceWebConfig implements WebMvcConfigurer {
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         converters.add(new StringHttpMessageConverter());
