@@ -1,6 +1,7 @@
 package com.bulletbalance.model;
 
 import com.bulletbalance.analytics.AllocationResult;
+import com.bulletbalance.model.chart.ChartPlot;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sun.istack.internal.NotNull;
 import lombok.AllArgsConstructor;
@@ -26,6 +27,6 @@ public class TangentPortfolioAnalytics {
 
     @NotNull @NonNull
     @JsonProperty
-    List<AllocationResult> samples;
+    ChartPlot chartPlot;
 
 }

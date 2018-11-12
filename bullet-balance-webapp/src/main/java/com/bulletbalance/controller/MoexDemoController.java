@@ -6,8 +6,10 @@ import com.bulletbalance.analytics.AllocationResult;
 import com.bulletbalance.analytics.LeastRiskyAllocationSelector;
 import com.bulletbalance.analytics.TangentPortfolioSelector;
 import com.bulletbalance.model.TangentPortfolioAnalytics;
+import com.bulletbalance.model.chart.ChartPlot;
 import com.bulletbalance.portfolio.Portfolio;
 import com.bulletbalance.random.NoShortSellWeightsGenerator;
+import com.bulletbalance.utils.ChartUtils;
 import com.bulletbalance.utils.PortfolioUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +32,7 @@ public class MoexDemoController {
     }
 
     @GetMapping(value = "/sample", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public TangentPortfolioAnalytics getSampleAllocations(@RequestParam Optional<Integer> sampleCount) {
+    public TangentPortfolioAnalytics getSampleAllocations(@RequestParam Optional<Integer> sampleCount, @RequestParam Optional<Integer> pointsCount) {
         AllocationSamplesGenerator analyzer = new AllocationSamplesGenerator();
         analyzer.setSamplesCount(sampleCount.orElseGet(() -> 10_000));
         analyzer.setWeightsGenerator(new NoShortSellWeightsGenerator());
@@ -39,7 +41,8 @@ public class MoexDemoController {
         List<AllocationResult> samples = analyzer.generate();
         AllocationResult lowestRisk = LOWEST_RISK_SELECTOR.selectResult(samples);
         AllocationResult tangentPortfolio = TANGENT_PORTFOLIO_SELECTOR.selectResult(samples);
-
-        return new TangentPortfolioAnalytics(portfolio.getAssetKeys(), lowestRisk, tangentPortfolio, samples);
+        int count = pointsCount.orElseGet(() -> 200);
+        ChartPlot plot = ChartUtils.createPlot(samples, count);
+        return new TangentPortfolioAnalytics(portfolio.getAssetKeys(), lowestRisk, tangentPortfolio, plot);
     }
 }
