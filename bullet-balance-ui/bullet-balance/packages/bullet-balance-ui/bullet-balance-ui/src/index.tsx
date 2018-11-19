@@ -1,15 +1,15 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import {AppComponent} from "./modules/app/components/app.component";
+import {AppContainer} from "./modules/app/containers/app.container";
 
 const root =  document.getElementById("root");
 
-const render = (Component: typeof AppComponent) => {
-    const mainComponent = <Component compiler="TypeScript" framework="React" />;
+const render = (Component: typeof AppContainer) => {
+    const mainComponent = <Component compiler="TypeScript" />;
     ReactDOM.render(mainComponent, root);
 };
 
-render(AppComponent);
+render(AppContainer);
 
 if (module.hot) {
     module.hot.accept('./modules/app/components/app.component', () => {
