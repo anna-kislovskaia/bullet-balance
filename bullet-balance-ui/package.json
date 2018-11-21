@@ -7,9 +7,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@data-ui/xy-chart": "0.0.71",
     "react": "16.6.3",
     "react-dom": "16.6.3",
-    "react-vis": "1.11.4",
     "rxjs": "6.3.3"
   },
   "devDependencies": {
