@@ -10,7 +10,7 @@ export class AppComponent extends Component<AppComponentProps, {}> {
         return ( <div>
                     <h1>Hello from {this.props.compiler} and {this.props.framework}!</h1>
                     <div>
-                        <XYChartComponent chartData={LINEAR_CHART_FIXTURE} />
+                        <XYChartComponent width={500} height={400} chartData={LINEAR_CHART_FIXTURE} />
                     </div>
                 </div>
         );
