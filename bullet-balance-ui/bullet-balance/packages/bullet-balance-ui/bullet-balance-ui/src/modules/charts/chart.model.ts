@@ -1,4 +1,6 @@
-
+export enum Shape {
+    line, square, circle
+}
 export type TDateChartPoint = {
     x: Date;
     y: number;
