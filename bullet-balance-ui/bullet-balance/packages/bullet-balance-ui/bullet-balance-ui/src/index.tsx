@@ -12,9 +12,9 @@ const render = (Component: typeof AppContainer) => {
 render(AppContainer);
 
 if (module.hot) {
-    module.hot.accept('./modules/app/components/app.component', () => {
+    module.hot.accept('./modules/app/containers/app.container', () => {
         console.log("Reloading Sources...");
-        const nextApp = require('./modules/app/components/app.component').AppComponent; //tslint:disable-line no-require-imports
+        const nextApp = require('./modules/app/containers/app.container').AppContainer; //tslint:disable-line no-require-imports
         render(nextApp);
     });
 }
