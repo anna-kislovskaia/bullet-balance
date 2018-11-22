@@ -60,5 +60,5 @@ export type Task<T> = TaskSuccess<T> | TaskFailure<T> | TaskPending<T>;
 export namespace TaskUtils {
     export const pending: TaskPending<never> = new TaskPending<never>();
     export const success = <T>(result: T) => new TaskSuccess<T>(result);
-    export const failure = <T>(error: Error) => new TaskFailure(error);
+    export const failure = <T>(error: Error) => new TaskFailure<T>(error);
 }
