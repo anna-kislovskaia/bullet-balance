@@ -8,6 +8,7 @@
   "license": "ISC",
   "dependencies": {
     "@data-ui/xy-chart": "0.0.71",
+    "querystring": "0.2.0",
     "react": "16.6.3",
     "react-dom": "16.6.3",
     "rxjs": "6.3.3"
