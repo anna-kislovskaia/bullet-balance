@@ -47,7 +47,7 @@ public class TangentPortfolioSelector implements AllocationResultSelector {
 				// check possible intersection
 				AllocationResult next = increasingReturns.get(i + 1);
 				double slope = calculateSlope(current);
-				double y = slope * next.getWeigthedRisk() + riskFreeRate;
+				double y = slope * next.getWeighthedRisk() + riskFreeRate;
 				if (y > next.getWeightedReturn()) {
 					return current;
 				}
@@ -64,7 +64,7 @@ public class TangentPortfolioSelector implements AllocationResultSelector {
 	 */
 	private double calculateSlope(AllocationResult result) {
 		double y = result.getWeightedReturn() - riskFreeRate;
-		return y / result.getWeigthedRisk();
+		return y / result.getWeighthedRisk();
 	}
 
 }

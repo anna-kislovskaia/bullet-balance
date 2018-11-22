@@ -31,7 +31,7 @@ export class XYChartComponent extends Component<XYChartProps, {}> {
 
     renderPlot = (series: TChartSeries) => {
         return (
-            <LineSeries key={series.name} seriesKey={series.name} data={series.points} stroke={series.color}/>
+            <LineSeries key={series.key} seriesKey={series.name} data={series.points} stroke={series.color}/>
         );
     }
 }

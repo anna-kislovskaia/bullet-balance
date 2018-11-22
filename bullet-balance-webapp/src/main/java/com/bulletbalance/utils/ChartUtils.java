@@ -8,7 +8,6 @@ import com.bulletbalance.model.chart.Range;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public class ChartUtils {
     private static final double EPS = 0.000_005;
@@ -23,8 +22,8 @@ public class ChartUtils {
             throw new IllegalArgumentException("Samples count is insufficient");
         }
         Range xRange = new Range()
-                .setMin(allocations.get(0).getWeigthedRisk())
-                .setMax(allocations.get(allocations.size() - 1).getWeigthedRisk());
+                .setMin(allocations.get(0).getWeighthedRisk())
+                .setMax(allocations.get(allocations.size() - 1).getWeighthedRisk());
         double xdistance = xRange.getMax() - xRange.getMin();
         double invervalsCount = maxPointCount / 2;
         double eps = xdistance / invervalsCount;
@@ -33,7 +32,7 @@ public class ChartUtils {
         Range yRange = null;
         double start = Double.MIN_VALUE;
         for(AllocationResult sample : allocations) {
-            double x = sample.getWeigthedRisk();
+            double x = sample.getWeighthedRisk();
             double y = sample.getWeightedReturn();
             if (start + eps < x) {
                 // register point
@@ -67,7 +66,7 @@ public class ChartUtils {
     }
 
     private static Point updatePoint(AllocationResult sample, Point point, BiFunction<Double, Double, Double> selector) {
-        double x = sample.getWeigthedRisk();
+        double x = sample.getWeighthedRisk();
         double y = sample.getWeightedReturn();
         if (point == null || selector.apply(y, point.getY()) == y) {
             return new Point().setX(x).setY(y);

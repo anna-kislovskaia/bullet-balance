@@ -23,8 +23,9 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/demo/moex")
 public class MoexDemoController {
+    private static final double RISK_FREE_RATE = 0.0025;
     private static final LeastRiskyAllocationSelector LOWEST_RISK_SELECTOR = new LeastRiskyAllocationSelector();
-    private static final TangentPortfolioSelector TANGENT_PORTFOLIO_SELECTOR = new TangentPortfolioSelector(PortfolioUtils.convertAnnualRateToDaily(0.05));
+    private static final TangentPortfolioSelector TANGENT_PORTFOLIO_SELECTOR = new TangentPortfolioSelector(PortfolioUtils.convertAnnualRateToDaily(RISK_FREE_RATE));
 
     @GetMapping(value = "/test", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String test() {
@@ -43,6 +44,6 @@ public class MoexDemoController {
         AllocationResult tangentPortfolio = TANGENT_PORTFOLIO_SELECTOR.selectResult(samples);
         int count = pointsCount.orElseGet(() -> 200);
         ChartPlot plot = ChartUtils.createPlot(samples, count);
-        return new TangentPortfolioAnalytics(portfolio.getAssetKeys(), lowestRisk, tangentPortfolio, plot);
+        return new TangentPortfolioAnalytics(portfolio.getAssetKeys(), lowestRisk, tangentPortfolio, plot, RISK_FREE_RATE);
     }
 }
