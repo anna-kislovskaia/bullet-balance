@@ -12,7 +12,8 @@ export type RxProperties<K extends keyof P, P> = (props$: Observable<Readonly<Pa
 
 
 export function rxComponentFactory<K extends keyof P, P extends object = never>(
-    select: RxProperties<K, P>
+    select: RxProperties<K, P>,
+    defaults?: Partial<P>
 ): RxComponentFactory<K, P> {
     return Target => {
         class RxComponent extends Component<Readonly<P>> {
@@ -28,8 +29,12 @@ export function rxComponentFactory<K extends keyof P, P extends object = never>(
                     .subscribe(state => this.setState(state));
             }
 
-            componentWillReceiveProps(props: Readonly<P>) {
-                this.props$.next(props);
+            componentWillReceiveProps(updatedProps: Readonly<P>) {
+                const properties: Readonly<P> = {
+                    ...(defaults as object),
+                    ...(updatedProps as object)
+                } as P;
+                this.props$.next(properties);
             }
 
             componentWillUnmount() {

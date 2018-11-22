@@ -26,7 +26,7 @@ export class ChartLegend extends Component<ChartLegendProps, {}> {
     }
 
     renderPlotMarker = (item: TPlotLegend) => {
-        const style = {stroke: item.color, strokeWidth : 2};
+        const style = {stroke: item.color, strokeWidth : 1, fill: item.color};
         switch(item.shape) {
             case Shape.line:
                 return (
@@ -37,13 +37,13 @@ export class ChartLegend extends Component<ChartLegendProps, {}> {
             case Shape.square:
                 return (
                     <svg height="10" width="20">
-                        <line x1="0" y1="5" x2="15" y2="5" style={style} />
+                        <rect width="10" height="10" style={style} />
                     </svg>
                 );
             case Shape.circle:
                 return (
                     <svg height="10" width="20">
-                        <line x1="0" y1="5" x2="15" y2="5" style={style} />
+                        <circle cx="50" cy="50" r="10" style={style} />
                     </svg>
                 );
 
