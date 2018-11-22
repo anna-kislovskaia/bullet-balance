@@ -3,12 +3,11 @@ import { Observable } from "rxjs";
 import * as qs from 'querystring';
 import {AjaxRequest} from "rxjs/internal/observable/dom/AjaxObservable";
 import {ajax} from "rxjs/internal/observable/dom/ajax";
-import {Task, TaskFailure, TaskPending, TaskUtils} from "./task.model";
+import {Task, TaskUtils} from "./task.model";
 import {catchError, map, startWith} from "rxjs/internal/operators";
 import success = TaskUtils.success;
 import failure = TaskUtils.failure;
 import pending = TaskUtils.pending;
-import {Res} from "awesome-typescript-loader/dist/checker/protocol";
 
 export class RemoteTaskApi {
     readonly baseHref: string;
@@ -38,9 +37,9 @@ export class RemoteTaskApi {
         return ajax(xhr)
             .pipe(map(response => success<Response>(response.response)))
             .pipe(catchError(response => {
-                return of(new TaskFailure<Response>(response));
+                return of(failure<Response>(response));
             }))
-            .pipe(startWith(new TaskPending<Response>()));
+            .pipe(startWith(pending));
     };
 
     get<Response = never>(url: string, query?: {}): Observable<Task<Response>> {
