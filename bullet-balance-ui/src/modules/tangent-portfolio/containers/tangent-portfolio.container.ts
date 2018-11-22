@@ -20,7 +20,7 @@ const props$: RxProperties<DefaultProperties, TangentPortfolioComponentProps> = 
                 const lowerPoints = data.points.filter(point => point.y <= lowestRiskReturn);
                 const maxRisk = data.points[data.points.length - 1].x;
                 const coef = (data.tangent.y - data.riskFree.y)/ data.tangent.x;
-                const maxTangentY = (maxRisk - data.tangent.x) * coef + data.riskFree.y;
+                const maxTangentY = (maxRisk - data.tangent.x) * coef + data.tangent.y;
                 const tangentPoints: TPoint[] = [
                     data.riskFree,
                     data.tangent,
@@ -34,7 +34,7 @@ const props$: RxProperties<DefaultProperties, TangentPortfolioComponentProps> = 
                     ],
                     enableTime: false
                 };
-                const legendData: TPlotLegend = { name: "test name", color: "#79C7E3", shape: Shape.line};
+                const legendData: TPlotLegend = { name: "Tangent Portfolio", color: "#79C7E3", shape: Shape.line};
                 return { chartData, legend: [legendData] };
             } else {
                 return {
