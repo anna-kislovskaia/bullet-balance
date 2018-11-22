@@ -29,4 +29,8 @@ public class TangentPortfolioAnalytics {
     @JsonProperty
     ChartPlot chartPlot;
 
+    @NotNull @NonNull
+    @JsonProperty
+    double riskFreeRate;
+
 }

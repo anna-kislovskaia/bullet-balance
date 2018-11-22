@@ -6,7 +6,7 @@ import { Observable } from "rxjs/index";
 
 export namespace MoexDemoService {
     export const getMoexSampleCurve = (): Observable<Task<TTangentPortfolio>> => {
-        return REMOTE_API.get<any>('demo/moex/sample')
+        return REMOTE_API.get<any>('api/demo/moex/sample')
             .pipe(map(task => task.map<TTangentPortfolio>(parseTangentPortfolio)));
     };
 
@@ -15,14 +15,14 @@ export namespace MoexDemoService {
             instruments: raw.instruments,
             weights: raw.tangentPortfolioAllocation.weights
         };
-        const lowest: TPoint = {x: raw.lowestRiskAllocation.weigthedRisk, y: raw.lowestRiskAllocation.weigthedReturn};
-        const tangent: TPoint = {x: raw.tangentPortfolioAllocation.weigthedRisk, y: raw.tangentPortfolioAllocation.weigthedReturn};
+        const lowest: TPoint = {x: raw.lowestRiskAllocation.weighthedRisk, y: raw.lowestRiskAllocation.weightedReturn};
+        const tangent: TPoint = {x: raw.tangentPortfolioAllocation.weighthedRisk, y: raw.tangentPortfolioAllocation.weightedReturn};
         return {
             portfolio,
             points: raw.chartPlot.points,
             lowest,
             tangent,
-            riskFree: {x: 0, y: 0.25}
+            riskFree: {x: 0, y: raw.riskFreeRate}
         }
     }
 }

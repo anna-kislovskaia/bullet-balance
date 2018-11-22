@@ -16,7 +16,7 @@ import java.util.Comparator;
 @Data
 public class AllocationResult {
 	public static Comparator<AllocationResult> RISK_COMPARATOR = (r1, r2) -> {
-		int result = Double.compare(r1.weigthedRisk, r2.weigthedRisk);
+		int result = Double.compare(r1.weighthedRisk, r2.weighthedRisk);
 		if (result == 0) {
 			return Double.compare(r1.weightedReturn, r2.weightedReturn);
 		}
@@ -35,13 +35,13 @@ public class AllocationResult {
 	@NotNull
 	@NonNull
 	@JsonProperty
-	private final double weigthedRisk;
+	private final double weighthedRisk;
 
 	@Override
 	public String toString() {
 		return "AllocationResult{" +
 				"return=" + weightedReturn +
-				", risk=" + weigthedRisk +
+				", risk=" + weighthedRisk +
 				'}';
 	}
 }
