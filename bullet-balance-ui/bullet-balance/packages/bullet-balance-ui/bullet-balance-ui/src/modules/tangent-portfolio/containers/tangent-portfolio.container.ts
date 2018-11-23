@@ -34,12 +34,14 @@ const props$: RxProperties<DefaultProperties, TangentPortfolioComponentProps> = 
                     ],
                     enableTime: false
                 };
-                const legendData: TPlotLegend = { name: "Tangent Portfolio", color: "#79C7E3", shape: Shape.line};
-                return { chartData, legend: [legendData] };
+                const legendData: TPlotLegend[] = [
+                    { name: "Risk/Return distribution", color: "#79C7E3", shape: Shape.line},
+                    { name: "Tangent Portfolio", color: "#79C700", shape: Shape.line},
+                ];
+                return { chartData, legend: legendData };
             } else {
                 return {
-                    chartData: {series: [], enableTime: false},
-                    legend: undefined
+                    chartData: {series: [], enableTime: false}
                 }
             }
         }));
