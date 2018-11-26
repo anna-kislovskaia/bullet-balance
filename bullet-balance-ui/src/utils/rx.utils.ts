@@ -17,7 +17,7 @@ export function rxComponentFactory<K extends keyof P, P extends object = never>(
 ): RxComponentFactory<K, P> {
     return Target => {
         class RxComponent extends Component<Readonly<P>> {
-            static displayName = `RxComponentContainer(${Target.displayName || Target.name})`;
+            static displayName = `RxComponent(${Target.displayName || Target.name})`;
 
             private props$ = new BehaviorSubject(this.props);
             private results$ = select(this.props$.asObservable());
@@ -29,12 +29,8 @@ export function rxComponentFactory<K extends keyof P, P extends object = never>(
                     .subscribe(state => this.setState(state));
             }
 
-            componentWillReceiveProps(updatedProps: Readonly<P>) {
-                const properties: Readonly<P> = {
-                    ...(defaults as object),
-                    ...(updatedProps as object)
-                } as P;
-                this.props$.next(properties);
+            componentWillReceiveProps(props: Readonly<P>) {
+                this.props$.next(props);
             }
 
             componentWillUnmount() {
@@ -44,7 +40,8 @@ export function rxComponentFactory<K extends keyof P, P extends object = never>(
             }
 
             render() {
-                return createElement(Target, Object.assign({}, this.props, this.state));
+                const componentProperties = defaults ? Object.assign({}, defaults) : {};
+                return createElement(Target, Object.assign(componentProperties, this.props, this.state));
             }
         }
 
