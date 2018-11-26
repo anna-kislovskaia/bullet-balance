@@ -1,12 +1,14 @@
 import { REMOTE_API } from "../utils/task.utils";
 import { TPoint, TPortfolio, TTangentPortfolio } from "../model/data.model";
 import { Task } from "../utils/task.model";
-import { map } from "rxjs/internal/operators";
+import {map, observeOn} from "rxjs/internal/operators";
 import { Observable } from "rxjs/index";
+import {async} from "rxjs/internal/scheduler/async";
 
 export namespace MoexDemoService {
     export const getMoexSampleCurve = (): Observable<Task<TTangentPortfolio>> => {
         return REMOTE_API.get<any>('api/demo/moex/sample')
+            .pipe(observeOn(async))
             .pipe(map(task => task.map<TTangentPortfolio>(parseTangentPortfolio)));
     };
 

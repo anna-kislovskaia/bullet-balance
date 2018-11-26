@@ -4,21 +4,22 @@ import { XYChartComponent } from "../charts/chart.component";
 import { TChartData } from "../charts/chart.model";
 import { ChartLegend } from "../charts/legend/legend.component";
 import { TPlotLegend } from "../charts/legend/legend.model";
+import {Task} from "../../utils/task.model";
 
 export interface TangentPortfolioComponentProps {
-    chartData: TChartData,
+    chartData: Task<TChartData>,
     width: number,
     height: number
-    legend?: TPlotLegend[];
+    legend: Task<TPlotLegend[]>;
 }
 
 export class TangentPortfolioComponent extends Component<TangentPortfolioComponentProps, {}> {
     render() {
-        const { legend, chartData } = this.props;
+        const { legend, chartData, width, height } = this.props;
         return (
             <div>
-                {chartData && <XYChartComponent chartData={chartData} {...this.props} />}
-                {legend && <ChartLegend items={legend}/>}
+                {chartData.getNullable() && <XYChartComponent chartData={chartData.getNullable()} width={width} height={height}/>}
+                {legend.getNullable() && <ChartLegend items={legend.getNullable()}/>}
             </div>
         );
     }

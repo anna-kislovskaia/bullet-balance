@@ -18,6 +18,9 @@ export class TaskSuccess<T>  {
     map<P>(func: mapper<T, P>): Task<P> {
         return new TaskSuccess(func(this.value));
     }
+    getNullable(): T | null {
+        return this.value;
+    }
 }
 
 export class TaskFailure<T> {
@@ -38,6 +41,9 @@ export class TaskFailure<T> {
     map<P>(func: mapper<T, P>): Task<P> {
         return this as any;
     }
+    getNullable(): T | null {
+        return null;
+    }
 }
 
 export class TaskPending<T> {
@@ -52,6 +58,9 @@ export class TaskPending<T> {
     }
     map<P>(func: mapper<T, P>): Task<P> {
         return this as any;
+    }
+    getNullable(): T | null {
+        return null;
     }
 }
 
