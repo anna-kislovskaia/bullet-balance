@@ -1,76 +1,47 @@
 package com.bulletbalance.utils;
 
 import com.bulletbalance.analytics.AllocationResult;
+import com.bulletbalance.analytics.TangentPortfolioSelector;
 import com.bulletbalance.model.chart.ChartPlot;
 import com.bulletbalance.model.chart.Point;
 import com.bulletbalance.model.chart.Range;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 public class ChartUtils {
-    private static final double EPS = 0.000_005;
 
     /**
-     * picks min and max for each point within epsilon {@link #EPS}
+     * picks min and max for each point within epsilon {@link MathUtils#EPS}
      * @param allocations must be sorted with {@link AllocationResult#RISK_COMPARATOR}
      * @return plot data
      */
-    public static ChartPlot createPlot(List<AllocationResult> allocations, int maxPointCount) {
+    public static ChartPlot createPlot(List<AllocationResult> allocations, AllocationResult bendPoint) {
         if (allocations.size() < 2) {
             throw new IllegalArgumentException("Samples count is insufficient");
         }
-        Range xRange = new Range()
-                .setMin(allocations.get(0).getWeighthedRisk())
-                .setMax(allocations.get(allocations.size() - 1).getWeighthedRisk());
-        double xdistance = xRange.getMax() - xRange.getMin();
-        double invervalsCount = maxPointCount / 2;
-        double eps = xdistance / invervalsCount;
-        Point maxPoint = null, minPoint = null;
-        List<Point> points = new ArrayList<>();
-        Range yRange = null;
-        double start = Double.MIN_VALUE;
-        for(AllocationResult sample : allocations) {
-            double x = sample.getWeighthedRisk();
-            double y = sample.getWeightedReturn();
-            if (start + eps < x) {
-                // register point
-                registerPointsOnInterval(minPoint, maxPoint, points);
-                // reset point
-                maxPoint = updatePoint(sample, null, Math::max);
-                minPoint = updatePoint(sample, null, Math::min);
-                start = x;
-            } else {
-                maxPoint = updatePoint(sample, maxPoint, Math::max);
-                minPoint = updatePoint(sample, minPoint, Math::min);
-            }
-            if (yRange == null) {
-                yRange = new Range().setMin(y).setMax(y);
-            } else {
-                yRange.setMin(Math.min(yRange.getMin(), y)).setMax(Math.max(yRange.getMax(), y));
-            }
-        }
-        // register point
-        registerPointsOnInterval(minPoint, maxPoint, points);
+
+        List<AllocationResult> upperArc = TangentPortfolioSelector.filterSamples(
+                allocations.stream().filter(sample -> sample.getWeightedReturn() > bendPoint.getWeightedReturn()).collect(Collectors.toList()),
+                TangentPortfolioSelector.RETURN_COMPARATOR);
+        List<AllocationResult> lowerArc = TangentPortfolioSelector.filterSamples(
+                allocations.stream().filter(sample -> sample.getWeightedReturn() < bendPoint.getWeightedReturn()).collect(Collectors.toList()),
+                TangentPortfolioSelector.RETURN_COMPARATOR.reversed());
+
+        List<AllocationResult> curve = new ArrayList<>(allocations.size());
+        curve.add(bendPoint);
+        curve.addAll(upperArc);
+        curve.addAll(lowerArc);
+        curve.sort(AllocationResult.RISK_COMPARATOR);
+
+        List<Point> points = curve.stream()
+                .map(sample -> new Point().setX(sample.getWeighthedRisk()).setY(sample.getWeightedReturn()))
+                .collect(Collectors.toList());
+        Range xRange = new Range().setMin(points.get(0).getX()).setMax(points.get(points.size() - 1).getX());
+        Range yRange = new Range()
+                .setMin(lowerArc.get(lowerArc.size() - 1).getWeightedReturn())
+                .setMax(upperArc.get(upperArc.size() - 1).getWeightedReturn());
         return new ChartPlot(xRange, yRange, points);
-    }
-
-    private static void registerPointsOnInterval(Point maxPoint, Point minPoint, List<Point> points) {
-        if (maxPoint != null) {
-            points.add(maxPoint);
-        }
-        if (minPoint != null && !minPoint.equals(maxPoint)) {
-            points.add(minPoint);
-        }
-    }
-
-    private static Point updatePoint(AllocationResult sample, Point point, BiFunction<Double, Double, Double> selector) {
-        double x = sample.getWeighthedRisk();
-        double y = sample.getWeightedReturn();
-        if (point == null || selector.apply(y, point.getY()) == y) {
-            return new Point().setX(x).setY(y);
-        }
-        return point;
     }
 }

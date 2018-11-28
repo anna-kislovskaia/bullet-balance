@@ -43,7 +43,7 @@ public class MoexDemoController {
         AllocationResult lowestRisk = LOWEST_RISK_SELECTOR.selectResult(samples);
         AllocationResult tangentPortfolio = TANGENT_PORTFOLIO_SELECTOR.selectResult(samples);
         int count = pointsCount.orElseGet(() -> 200);
-        ChartPlot plot = ChartUtils.createPlot(samples, count);
+        ChartPlot plot = ChartUtils.createPlot(samples, lowestRisk);
         return new TangentPortfolioAnalytics(portfolio.getAssetKeys(), lowestRisk, tangentPortfolio, plot, RISK_FREE_RATE);
     }
 }

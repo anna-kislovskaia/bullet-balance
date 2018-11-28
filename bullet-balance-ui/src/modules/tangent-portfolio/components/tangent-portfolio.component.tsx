@@ -39,14 +39,18 @@ export class TangentPortfolioComponent extends Component<TangentPortfolioCompone
     render() {
         return (
             <table>
-                <tr>
-                    <input value={this.state.samplesCount} onChange={this.handleChange}/>
-                </tr>
-                <tr>
-                    <td>
-                        <TangentPortfolioChartContainer width={500} height={400} samplesCount={this.state.samplesCount}/>
-                    </td>
-                </tr>
+                <tbody>
+                    <tr>
+                        <td>
+                            <input value={this.state.samplesCount} onChange={this.handleChange}/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <TangentPortfolioChartContainer width={500} height={400} samplesCount={this.state.samplesCount}/>
+                        </td>
+                    </tr>
+                </tbody>
             </table>
         );
     }
