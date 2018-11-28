@@ -3,7 +3,7 @@ import { RxProperties, rxComponentFactory} from "../../../utils/rx.utils";
 import {TangentPortfolioChartComponent, TangentPortfolioChartProps} from "../components/tangent-portoflio-chart.component";
 import { Shape, TChartData} from "../../charts/chart.model";
 import {MoexDemoService} from "../../../services/moex-demo.service";
-import {map, shareReplay, switchMap} from "rxjs/internal/operators";
+import {distinctUntilChanged, map, shareReplay, switchMap} from "rxjs/internal/operators";
 import {TPoint} from "../../../model/data.model";
 import {Task, TaskUtils} from "../../../utils/task.model";
 import {TPlotLegend} from "../../charts/legend/legend.model";
@@ -17,7 +17,10 @@ const defaults: Partial<TangentPortfolioChartProps> = {
 };
 
 const props$: RxProperties<ExternalProperties, TangentPortfolioChartProps> = (props$) => {
-    const samplesCount$ = props$.pipe(map(value => value.samplesCount)).pipe(shareReplay(1));
+    const samplesCount$ = props$
+        .pipe(map(value => value.samplesCount))
+        .pipe(distinctUntilChanged())
+        .pipe(shareReplay(1));
     const data$ = samplesCount$.pipe(
         switchMap(count => MoexDemoService.getMoexSampleCurve(count).pipe(shareReplay(1)))
     );
