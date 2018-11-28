@@ -4,7 +4,10 @@ import com.bulletbalance.utils.MathUtils;
 import com.sun.istack.internal.Nullable;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.stream.Stream;
 
 /**
  * Selects point on hyperbola which also lays on straight line having {0, {@linkplain #riskFreeRate}} as one of points
@@ -21,29 +24,10 @@ public class TangentPortfolioSelector implements AllocationResultSelector {
 	@Nullable
 	public AllocationResult selectResult(List<AllocationResult> results) {
 		System.out.println(String.format("Risk free rate %f9", riskFreeRate));
-		int size = results.size();
-		List<AllocationResult> increasingReturns = new ArrayList<>(size);
-		AllocationResult previous = null;
-		int aboveRiskFreeRateIndex = -1;
-		for (AllocationResult current : results) {
-			if (previous == null || previous.getWeightedReturn() + MathUtils.EPS < current.getWeightedReturn()) {
-				previous = current;
-				increasingReturns.add(current);
-
-				if (aboveRiskFreeRateIndex < 0 && current.getWeightedReturn() > riskFreeRate) {
-					aboveRiskFreeRateIndex = increasingReturns.size() - 1;
-				}
-			}
-		}
-
-		if (aboveRiskFreeRateIndex < 0) {
-			System.out.println("No returns above risk free rate were found");
-			return null;
-		}
-
-		for (int i = aboveRiskFreeRateIndex, n = increasingReturns.size(); i < n; i++) {
+		List<AllocationResult> increasingReturns = filterSamples(results, RETURN_COMPARATOR);
+		for (int i = 0, n = increasingReturns.size(); i < n; i++) {
 			AllocationResult current = increasingReturns.get(i);
-			if (i + 1 < n) {
+			if (current.getWeightedReturn() >= riskFreeRate && i + 1 < n) {
 				// check possible intersection
 				AllocationResult next = increasingReturns.get(i + 1);
 				double slope = calculateSlope(current);
@@ -65,6 +49,20 @@ public class TangentPortfolioSelector implements AllocationResultSelector {
 	private double calculateSlope(AllocationResult result) {
 		double y = result.getWeightedReturn() - riskFreeRate;
 		return y / result.getWeighthedRisk();
+	}
+
+	public static final Comparator<AllocationResult> RETURN_COMPARATOR = (sample1, sample2) -> Double.compare(sample1.getWeightedReturn(), sample2.getWeightedReturn() + MathUtils.EPS);
+
+	public static List<AllocationResult> filterSamples(List<AllocationResult> samples, Comparator<AllocationResult> comparator) {
+		List<AllocationResult> sortedReturns = new ArrayList<>();
+		AllocationResult previous = null;
+		for (AllocationResult current : samples) {
+			if (previous == null || comparator.compare(current, previous) > 0) {
+				previous = current;
+				sortedReturns.add(current);
+			}
+		}
+		return sortedReturns;
 	}
 
 }
