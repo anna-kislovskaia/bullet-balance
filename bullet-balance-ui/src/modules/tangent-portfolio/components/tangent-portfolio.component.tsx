@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { Component, ChangeEvent } from "react";
 import {TangentPortfolioChartContainer} from "../containers/tangent-portfolio-chart.container";
+import {BehaviorSubject, Subscription} from "rxjs/index";
+import { observeOn, throttleTime} from "rxjs/internal/operators";
+import {animationFrame} from "rxjs/internal/scheduler/animationFrame";
 
 export interface TangentPortfolioComponentProps {}
 
@@ -10,10 +13,27 @@ type TangentPortfolioComponentState = {
 
 export class TangentPortfolioComponent extends Component<TangentPortfolioComponentProps, TangentPortfolioComponentState> {
 
+    private samples$ = new BehaviorSubject<number>(10000);
+    private resultsSubscription?: Subscription;
+
     constructor(props: TangentPortfolioComponentProps) {
         super(props);
         this.state = {samplesCount: 10000};
         this.handleChange = this.handleChange.bind(this);
+    }
+
+    componentWillMount() {
+        this.resultsSubscription = this.samples$
+            .asObservable()
+            .pipe(throttleTime(100))
+            .pipe(observeOn(animationFrame))
+            .subscribe(count => this.setState({samplesCount: count}));
+    }
+
+    componentWillUnmount() {
+        if (this.resultsSubscription) {
+            this.resultsSubscription.unsubscribe();
+        }
     }
 
     render() {
@@ -33,6 +53,8 @@ export class TangentPortfolioComponent extends Component<TangentPortfolioCompone
 
     handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         const count = parseInt(event.currentTarget.value, 10);
-        this.setState({samplesCount: count});
+        if (count && !isNaN(count)) {
+            this.samples$.next(count);
+        }
     }
 }
