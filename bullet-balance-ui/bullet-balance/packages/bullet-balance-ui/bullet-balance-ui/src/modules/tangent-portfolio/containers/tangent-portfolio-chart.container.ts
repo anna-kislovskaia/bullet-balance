@@ -1,18 +1,26 @@
 import { ComponentClass, Component } from 'react';
 import { RxProperties, rxComponentFactory} from "../../../utils/rx.utils";
-import {TangentPortfolioComponent, TangentPortfolioComponentProps} from "../tangent-portoflio.component";
+import {TangentPortfolioChartComponent, TangentPortfolioChartProps} from "../components/tangent-portoflio-chart.component";
 import { Shape, TChartData} from "../../charts/chart.model";
 import {MoexDemoService} from "../../../services/moex-demo.service";
-import {map, shareReplay} from "rxjs/internal/operators";
+import {map, shareReplay, switchMap} from "rxjs/internal/operators";
 import {TPoint} from "../../../model/data.model";
 import {Task, TaskUtils} from "../../../utils/task.model";
 import {TPlotLegend} from "../../charts/legend/legend.model";
 import {Observable, combineLatest} from "rxjs/index";
 
-type ExternalProperties = 'width' | 'height';
+type ExternalProperties = 'width' | 'height' | 'samplesCount';
 
-const props$: RxProperties<ExternalProperties, TangentPortfolioComponentProps> = () => {
-    const data$ = MoexDemoService.getMoexSampleCurve().pipe(shareReplay(1));
+const defaults: Partial<TangentPortfolioChartProps> = {
+    chartData: TaskUtils.pending,
+    legend: TaskUtils.pending
+};
+
+const props$: RxProperties<ExternalProperties, TangentPortfolioChartProps> = (props$) => {
+    const samplesCount$ = props$.pipe(map(value => value.samplesCount)).pipe(shareReplay(1));
+    const data$ = samplesCount$.pipe(
+        switchMap(count => MoexDemoService.getMoexSampleCurve(count).pipe(shareReplay(1)))
+    );
 
     const chartData$: Observable<Task<TChartData>> = data$
         .pipe(map(task => task.map( data => {
@@ -49,9 +57,4 @@ const props$: RxProperties<ExternalProperties, TangentPortfolioComponentProps> =
     }));
 };
 
-const defaults: Partial<TangentPortfolioComponentProps> = {
-    chartData: TaskUtils.pending,
-    legend: TaskUtils.pending
-};
-
-export const TangentPortfolioContainer = rxComponentFactory<ExternalProperties, TangentPortfolioComponentProps>(props$, defaults)(TangentPortfolioComponent);
+export const TangentPortfolioChartContainer = rxComponentFactory<ExternalProperties, TangentPortfolioChartProps>(props$, defaults)(TangentPortfolioChartComponent);

@@ -6,8 +6,8 @@ import { Observable } from "rxjs/index";
 import {async} from "rxjs/internal/scheduler/async";
 
 export namespace MoexDemoService {
-    export const getMoexSampleCurve = (): Observable<Task<TTangentPortfolio>> => {
-        return REMOTE_API.get<any>('api/demo/moex/sample')
+    export const getMoexSampleCurve = (samplesCount: number): Observable<Task<TTangentPortfolio>> => {
+        return REMOTE_API.get<any>('api/demo/moex/sample?samplesCount=' + samplesCount)
             .pipe(observeOn(async))
             .pipe(map(task => task.map<TTangentPortfolio>(parseTangentPortfolio)));
     };

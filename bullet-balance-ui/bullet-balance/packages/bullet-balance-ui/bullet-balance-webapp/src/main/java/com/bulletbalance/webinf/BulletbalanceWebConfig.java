@@ -1,5 +1,6 @@
 package com.bulletbalance.webinf;
 
+import com.bulletbalance.controller.RequestLoggingFilter;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -8,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -58,4 +60,9 @@ public class BulletbalanceWebConfig implements WebMvcConfigurer {
                         JsonInclude.Include.NON_NULL
                 );
     }
+
+//    @Bean
+//    public RequestLoggingFilter getLoggingFilter() {
+//        return new RequestLoggingFilter();
+//    }
 }
