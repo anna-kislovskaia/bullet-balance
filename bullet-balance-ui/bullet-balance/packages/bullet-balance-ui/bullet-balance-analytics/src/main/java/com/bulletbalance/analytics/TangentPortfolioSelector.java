@@ -6,8 +6,6 @@ import com.sun.istack.internal.Nullable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.BiFunction;
-import java.util.stream.Stream;
 
 /**
  * Selects point on hyperbola which also lays on straight line having {0, {@linkplain #riskFreeRate}} as one of points
@@ -25,16 +23,19 @@ public class TangentPortfolioSelector implements AllocationResultSelector {
 	public AllocationResult selectResult(List<AllocationResult> results) {
 		System.out.println(String.format("Risk free rate %f9", riskFreeRate));
 		List<AllocationResult> increasingReturns = filterSamples(results, RETURN_COMPARATOR);
-		for (int i = 0, n = increasingReturns.size(); i < n; i++) {
+		outer: for (int i = 0, n = increasingReturns.size(); i < n; i++) {
 			AllocationResult current = increasingReturns.get(i);
-			if (current.getWeightedReturn() >= riskFreeRate && i + 1 < n) {
-				// check possible intersection
-				AllocationResult next = increasingReturns.get(i + 1);
+			if (current.getWeightedReturn() >= riskFreeRate) {
 				double slope = calculateSlope(current);
-				double y = slope * next.getWeighthedRisk() + riskFreeRate;
-				if (y > next.getWeightedReturn()) {
-					return current;
+				// check possible intersection
+				for (int k = i + 1; k < n; k++) {
+					AllocationResult next = increasingReturns.get(k);
+					double y = slope * next.getWeighthedRisk() + riskFreeRate;
+					if (next.getWeightedReturn() >= y) {
+						continue outer;
+					}
 				}
+				return current;
 			}
 
 		}

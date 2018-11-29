@@ -11,16 +11,16 @@ export class ChartLegend extends Component<ChartLegendProps, {}> {
     render() {
         const { items } = this.props;
         return (
-            <div>
+            <p>
                 {items.map(item => {
                     return (
-                        <div key={`legend-${item.name}`}>
+                        <span key={`legend-${item.name}`}>
                             {this.renderPlotMarker(item)}
-                            <span>{item.name}</span>
-                        </div>
+                            <span>{item.name} </span>
+                        </span>
                     );
                 })}
-            </div>
+            </p>
 
         );
     }

@@ -1,6 +1,9 @@
 import { ComponentClass, Component } from 'react';
 import { RxProperties, rxComponentFactory} from "../../../utils/rx.utils";
-import {TangentPortfolioChartComponent, TangentPortfolioChartProps} from "../components/tangent-portoflio-chart.component";
+import {
+    AllocationItem, PortfolioAllocation, TangentPortfolioChartComponent,
+    TangentPortfolioChartProps
+} from "../components/tangent-portoflio-chart.component";
 import { Shape, TChartData} from "../../charts/chart.model";
 import {MoexDemoService} from "../../../services/moex-demo.service";
 import {distinctUntilChanged, map, shareReplay, switchMap} from "rxjs/internal/operators";
@@ -13,7 +16,8 @@ type ExternalProperties = 'width' | 'height' | 'samplesCount';
 
 const defaults: Partial<TangentPortfolioChartProps> = {
     chartData: TaskUtils.pending,
-    legend: TaskUtils.pending
+    legend: TaskUtils.pending,
+    allocation: TaskUtils.pending
 };
 
 const props$: RxProperties<ExternalProperties, TangentPortfolioChartProps> = (props$) => {
@@ -55,8 +59,17 @@ const props$: RxProperties<ExternalProperties, TangentPortfolioChartProps> = (pr
         ];
     })));
 
-    return combineLatest(chartData$, legendData$).pipe(map(([chartData, legend]) => {
-        return {chartData, legend}
+    const allocation$: Observable<Task<PortfolioAllocation>> = data$.pipe(map(task => task.map(data => {
+        const weights = data.portfolio.weights;
+        const allocations: AllocationItem[] = data.portfolio.instruments.map((ticker, index) => {
+            return {ticker, weight: weights[index]};
+        });
+        allocations.sort((a1, a2) => a1.weight - a2.weight);
+        return {risk: data.tangent.x, performance: data.tangent.y, allocations};
+    })));
+
+    return combineLatest(chartData$, legendData$, allocation$).pipe(map(([chartData, legend, allocation]) => {
+        return {chartData, legend, allocation}
     }));
 };
 
