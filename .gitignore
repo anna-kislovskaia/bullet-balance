@@ -2,10 +2,12 @@
 .settings/*
 .classpath
 .project
-bin
 node_modules
 /.idea/
 
 build
 /tsconfig.json
 /.idea
+*.iml
+target
+dist
