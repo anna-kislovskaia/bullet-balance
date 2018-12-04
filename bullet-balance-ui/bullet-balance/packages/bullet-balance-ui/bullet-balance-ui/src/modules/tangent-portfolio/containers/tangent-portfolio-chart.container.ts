@@ -25,9 +25,9 @@ const props$: RxProperties<ExternalProperties, TangentPortfolioChartProps> = (pr
         .pipe(map(value => value.samplesCount))
         .pipe(distinctUntilChanged())
         .pipe(shareReplay(1));
-    const data$ = samplesCount$.pipe(
-        switchMap(count => MoexDemoService.getMoexSampleCurve(count).pipe(shareReplay(1)))
-    );
+    const data$ = samplesCount$
+        .pipe(switchMap(count => MoexDemoService.getMoexSampleCurve(count)))
+        .pipe(shareReplay(1));
 
     const chartData$: Observable<Task<TChartData>> = data$
         .pipe(map(task => task.map( data => {
