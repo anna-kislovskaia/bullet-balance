@@ -5,6 +5,8 @@
     "lerna": "3.13.4"
   },
   "scripts": {
-    "refresh": "lerna clean --yes && lerna bootstrap --hoist"
+    "lerna": "lerna",
+    "refresh": "npm run lerna -- clean --yes && npm run lerna -- bootstrap --hoist",
+    "portfolio:start": "npm run lerna -- run --parallel --stream portfolio:start"
   }
 }

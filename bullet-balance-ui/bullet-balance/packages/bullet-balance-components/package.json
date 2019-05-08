@@ -35,6 +35,7 @@
     "webpack-hot-middleware": "2.24.3"
   },
   "scripts": {
-    "components:compile": "tsc"
+    "components:compile": "tsc -w",
+    "portfolio:start": "tsc -w"
   }
 }
