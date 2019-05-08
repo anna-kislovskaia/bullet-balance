@@ -1,18 +1,20 @@
 {
-  "name": "bullet-balance-portfolio",
+  "name": "bullet-balance-components",
   "version": "1.0.0",
   "description": "Portfolio Modeling Tool UI",
-  "main": "index.js",
+  "main": "dist/index.js",
   "repository": " https://github.com/anna-kislovskaia/bullet-balance.git",
   "author": "",
   "license": "ISC",
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@data-ui/xy-chart": "0.0.71",
     "querystring": "0.2.0",
     "react": "16.6.3",
     "react-dom": "16.6.3",
-    "rxjs": "6.3.3",
-    "bullet-balance-components": "1.0.0"
+    "rxjs": "6.3.3"
   },
   "devDependencies": {
     "@types/react": "16.7.6",
@@ -30,13 +32,12 @@
     "webpack": "4.26.0",
     "webpack-cli": "3.1.2",
     "webpack-dev-middleware": "3.4.0",
-    "webpack-hot-middleware": "2.24.3",
-    "bullet-balance-components": "1.0.0"
+    "webpack-hot-middleware": "2.24.3"
   },
   "scripts": {
     "jest": "jest",
     "test": "jest",
-    "compile:dev": "webpack --config webpack.dev.config.js",
+    "compile:components": "webpack --config webpack.dev.config.js",
     "watch:dev": "webpack --config webpack.dev.config.js --watch",
     "run:dev": "node ./bin/start.js --config ../webpack.dev.config.js --port 8001",
     "start": "concurrently --kill-others npm:watch:dev npm:run:dev"

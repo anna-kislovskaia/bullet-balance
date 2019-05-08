@@ -1,15 +1,13 @@
-import { ComponentClass, Component } from 'react';
 import { RxProperties, rxComponentFactory} from "../../../utils/rx.utils";
 import {
     AllocationItem, PortfolioAllocation, TangentPortfolioChartComponent,
     TangentPortfolioChartProps
 } from "../components/tangent-portoflio-chart.component";
-import { Shape, TChartData} from "../../charts/chart.model";
+import { Shape, TChartData, TPlotLegend} from "bullet-balance-components";
 import {MoexDemoService} from "../../../services/moex-demo.service";
 import {distinctUntilChanged, map, shareReplay, switchMap} from "rxjs/internal/operators";
 import {TPoint} from "../../../model/data.model";
 import {Task, TaskUtils} from "../../../utils/task.model";
-import {TPlotLegend} from "../../charts/legend/legend.model";
 import {Observable, combineLatest} from "rxjs/index";
 
 type ExternalProperties = 'width' | 'height' | 'samplesCount';
