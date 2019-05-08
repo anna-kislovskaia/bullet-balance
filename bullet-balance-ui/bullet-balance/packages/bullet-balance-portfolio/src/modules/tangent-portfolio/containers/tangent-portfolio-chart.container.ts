@@ -3,7 +3,7 @@ import {
     AllocationItem, PortfolioAllocation, TangentPortfolioChartComponent,
     TangentPortfolioChartProps
 } from "../components/tangent-portoflio-chart.component";
-import { Shape, TChartData, TPlotLegend} from "bullet-balance-components";
+import { Shape, TChartData, TPlotLegend} from "@bullet-balance/components";
 import {MoexDemoService} from "../../../services/moex-demo.service";
 import {distinctUntilChanged, map, shareReplay, switchMap} from "rxjs/internal/operators";
 import {TPoint} from "../../../model/data.model";

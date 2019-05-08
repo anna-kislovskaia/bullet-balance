@@ -1,5 +1,5 @@
 {
-  "name": "bullet-balance-components",
+  "name": "@bullet-balance/components",
   "version": "1.0.0",
   "description": "Portfolio Modeling Tool UI",
   "main": "dist/index.js",
