@@ -5,6 +5,6 @@
     "lerna": "3.13.4"
   },
   "scripts": {
-    "refresh": "lerna clean && lerna bootstrap --hoist"
+    "refresh": "lerna clean --yes && lerna bootstrap --hoist"
   }
 }
