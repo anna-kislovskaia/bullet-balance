@@ -7,6 +7,7 @@
   "scripts": {
     "lerna": "lerna",
     "refresh": "npm run lerna -- clean --yes && npm run lerna -- bootstrap --hoist",
-    "portfolio:start": "npm run lerna -- run --parallel --stream portfolio:start"
+    "portfolio:start": "npm run lerna -- run --parallel --stream portfolio:start",
+    "storybook": "start-storybook -p 6006"
   }
 }
