@@ -1,9 +1,6 @@
 import * as React from 'react';
 import { Component, Fragment} from "react";
-import { XYChartComponent } from "../../charts/chart.component";
-import { TChartData } from "../../charts/chart.model";
-import { ChartLegend } from "../../charts/legend/legend.component";
-import { TPlotLegend } from "../../charts/legend/legend.model";
+import { XYChartComponent, TChartData, ChartLegend, TPlotLegend } from "@bullet-balance/components";
 import {Task} from "../../../utils/task.model";
 import { LoadingIndicatorComponent } from '../../loading-indicator/loading-indicator.component';
 

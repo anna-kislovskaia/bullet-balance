@@ -1,5 +1,5 @@
 {
-  "name": "bullet-balance-ui",
+  "name": "@bullet-balance/portfolio",
   "version": "1.0.0",
   "description": "Portfolio Modeling Tool UI",
   "main": "index.js",
@@ -11,13 +11,16 @@
     "querystring": "0.2.0",
     "react": "16.6.3",
     "react-dom": "16.6.3",
-    "rxjs": "6.3.3"
+    "rxjs": "6.3.3",
+    "@bullet-balance/components": "1.0.0"
   },
   "devDependencies": {
     "@types/react": "16.7.6",
     "@types/react-dom": "16.0.9",
     "@types/webpack-env": "1.13.6",
     "awesome-typescript-loader": "5.2.1",
+    "@storybook/react": "5.0.11",
+    "@types/storybook__react": "4.0.1",   
     "concurrently": "4.1.0",
     "css-loader": "1.0.1",
     "express": "4.16.4",
@@ -34,9 +37,9 @@
   "scripts": {
     "jest": "jest",
     "test": "jest",
-    "compile:dev": "webpack --config webpack.dev.config.js",
-    "watch:dev": "webpack --config webpack.dev.config.js --watch",
-    "run:dev": "node ./bin/start.js --config ../webpack.dev.config.js --port 8001",
-    "start": "concurrently --kill-others npm:watch:dev npm:run:dev"
+    "portfolio:compile": "webpack --config webpack.dev.config.js",
+    "portfolio:watch": "webpack --config webpack.dev.config.js --watch",
+    "portfolio:run": "node ./bin/start.js --config ../webpack.dev.config.js --port 8001",
+    "portfolio:start": "concurrently --kill-others npm:portfolio:watch npm:portfolio:run"
   }
 }
