@@ -8,6 +8,7 @@
     "lerna": "lerna",
     "refresh": "npm run lerna -- clean --yes && npm run lerna -- bootstrap --hoist",
     "portfolio:start": "npm run lerna -- run --parallel --stream portfolio:start",
+    "portfolio:build": "npm run lerna -- run --parallel --stream compile",
     "storybook": "start-storybook -p 6006"
   }
 }
