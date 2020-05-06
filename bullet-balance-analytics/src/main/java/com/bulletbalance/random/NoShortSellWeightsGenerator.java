@@ -7,13 +7,14 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Random;
 
 /**
  * Generates non-negative weights of all assets
  */
 public class NoShortSellWeightsGenerator implements RandomWeightsGenerator {
 	private static final BigDecimal TOTAL = BigDecimal.ONE.setScale(MathUtils.DEFAULT_PRECISION, RoundingMode.HALF_UP);
+	private static final Random rnd = new Random();
 
 	@Nonnull
 	public BigDecimal[] generateWeights(int count) {
@@ -21,10 +22,9 @@ public class NoShortSellWeightsGenerator implements RandomWeightsGenerator {
 			return new BigDecimal[]{TOTAL};
 		}
 		double[] randomWeights = new double[count];
-		ThreadLocalRandom random = ThreadLocalRandom.current();
 		double totalWeight = 0;
 		for (int i = 0; i < count; i++) {
-			randomWeights[i] = random.nextInt(101);
+			randomWeights[i] = rnd.nextInt(101);
 			totalWeight += randomWeights[i];
 		}
 

@@ -19,8 +19,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/demo/moex")
@@ -41,11 +43,17 @@ public class MoexDemoController {
         analyzer.setWeightsGenerator(new NoShortSellWeightsGenerator());
         analyzer.setPortfolio(portfolio);
         log.info("Calculating MOEX portfolio for base rate {} and sample count {}", baseRate, count);
-        List<AllocationResult> samples = analyzer.generate();
+        List<AllocationResult> samples = analyzer.generate().
+                stream().
+                map(allocation -> new AllocationResult(allocation.getWeights(), PortfolioUtils.convertDailyRateToAnnual(allocation.getWeightedReturn()), allocation.getWeighthedRisk())).
+                collect(Collectors.toList());
         AllocationResult lowestRisk = LOWEST_RISK_SELECTOR.selectResult(samples);
         log.info("Lowerst risk {}", lowestRisk);
-        TangentPortfolioSelector portfolioSelector = new TangentPortfolioSelector(PortfolioUtils.convertAnnualRateToDaily(baseRate));
+        TangentPortfolioSelector portfolioSelector = new TangentPortfolioSelector(baseRate);
         AllocationResult tangentPortfolio = portfolioSelector.selectResult(samples);
+        if (tangentPortfolio == null) {
+            tangentPortfolio = new AllocationResult(new BigDecimal[0], baseRate, lowestRisk.getWeighthedRisk());
+        }
         ChartPlot plot = ChartUtils.createPlot(samples, lowestRisk);
         return new TangentPortfolioAnalytics(portfolio.getAssetKeys(), lowestRisk, tangentPortfolio, plot, baseRate);
     }
