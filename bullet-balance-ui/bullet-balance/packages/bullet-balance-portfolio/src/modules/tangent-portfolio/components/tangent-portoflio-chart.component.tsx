@@ -21,6 +21,7 @@ export interface TangentPortfolioChartProps {
     width: number;
     height: number;
     samplesCount: number;
+    baseRate: number;
     legend: Task<TPlotLegend[]>;
 }
 

@@ -10,7 +10,7 @@ import {TPoint} from "../../../model/data.model";
 import {Task, TaskUtils} from "../../../utils/task.model";
 import {Observable, combineLatest} from "rxjs/index";
 
-type ExternalProperties = 'width' | 'height' | 'samplesCount';
+type ExternalProperties = 'width' | 'height' | 'samplesCount' | 'baseRate';
 
 const defaults: Partial<TangentPortfolioChartProps> = {
     chartData: TaskUtils.pending,
@@ -35,8 +35,12 @@ const props$: RxProperties<ExternalProperties, TangentPortfolioChartProps> = (pr
         .pipe(map(value => value.samplesCount))
         .pipe(distinctUntilChanged())
         .pipe(shareReplay(1));
-    const data$ = samplesCount$
-        .pipe(switchMap(count => MoexDemoService.getMoexSampleCurve(count)))
+    const baseRate$ = props$
+        .pipe(map(value => value.baseRate / 100))
+        .pipe(distinctUntilChanged())
+        .pipe(shareReplay(1));
+    const data$ = combineLatest(samplesCount$, baseRate$)
+        .pipe(switchMap(([count, baseRate]) => MoexDemoService.getMoexSampleCurve(count, baseRate)))
         .pipe(shareReplay(1));
 
     const chartData$: Observable<Task<TChartData>> = data$
@@ -58,7 +62,7 @@ const props$: RxProperties<ExternalProperties, TangentPortfolioChartProps> = (pr
                 let low: number = lowerPoints.findIndex(l => l.x >= point.x);
                 low = low >= 0 ? low : lowerPoints.length - 1;
                 return {x: convertValue(point.x), y: [convertValue(lowerPoints[low].y), convertValue(upperPoints[upper].y)]}
-            });
+            }); 
             distribution.push({x: 0, y: []}) 
             return {
                 series: [

@@ -6,8 +6,12 @@ import { Observable } from "rxjs/index";
 import {async} from "rxjs/internal/scheduler/async";
 
 export namespace MoexDemoService {
-    export const getMoexSampleCurve = (samplesCount: number): Observable<Task<TTangentPortfolio>> => {
-        return REMOTE_API.get<any>('api/demo/moex/sample?sampleCount=' + samplesCount)
+    export const getMoexSampleCurve = (samplesCount: number, baseRate?: number): Observable<Task<TTangentPortfolio>> => {
+        let url = `api/demo/moex/sample?sampleCount=${samplesCount}`;
+        if (baseRate) {
+            url += `&riskFreeRate=${baseRate}`;
+        }
+        return REMOTE_API.get<any>(url)
             .pipe(observeOn(async))
             .pipe(map(task => task.map<TTangentPortfolio>(parseTangentPortfolio)));
     };
