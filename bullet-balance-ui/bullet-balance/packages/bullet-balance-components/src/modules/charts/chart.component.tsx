@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Component, Fragment } from 'react';
-import { TChartData, TChartSeries } from "./chart.model";
-import { XYChart, XAxis, YAxis, LineSeries } from "@data-ui/xy-chart";
+import { Component } from 'react';
+import { TChartData, TChartSeries, ChartSeriesType } from "./chart.model";
+import { ComposedChart, XAxis, YAxis, Line, Legend, CartesianGrid, Tooltip, Area } from "recharts";
 
 export interface XYChartProps {
     chartData: TChartData,
@@ -9,29 +9,56 @@ export interface XYChartProps {
     height: number
 }
 
+const X_AXIS_KEY = 'x'; 
+const convertChartData = (chartData: TChartData) => {
+    return chartData.series.reduce((accum: any[], series: TChartSeries) => {
+        series.points.forEach(point => {
+            const index = accum.findIndex((value: any) => point.x === value.x);
+            if (index >= 0) {
+                const item = accum[index];
+                accum[index] = {...item, [series.key]: point.y};
+            } else {
+                const item = {[X_AXIS_KEY]: point.x, [series.key]: point.y };
+                accum.push(item);
+            }
+        });
+        return accum;
+    }, [])
+}
+
+const getSeriesNameByKey = (seriesKey: string, chartData: TChartData) => {
+    const series = chartData.series.find(s => s.key === seriesKey);
+    return series ? series.name : seriesKey;
+}
+
 export class XYChartComponent extends Component<XYChartProps, {}> {
     render() {
         const { chartData, children } = this.props;
+        const data = convertChartData(chartData);
 
-        const xScaleType = chartData.enableTime ? 'time' : 'linear';
         return (
-            <Fragment>
-                <XYChart {...this.props}
-                         xScale={{ type: xScaleType }}
-                         yScale={{ type: 'linear' }}
-                         ariaLabel={'test label'} >
-                    <XAxis />
-                    <YAxis orientation={'left'}  />
+                <ComposedChart  width={600} height={300} data={data}>
+                    <XAxis type="number" dataKey={X_AXIS_KEY}/>
+                    <YAxis type="number" />
+                    <Legend formatter={value => getSeriesNameByKey(value, chartData)}/>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <Tooltip />
                     {chartData.series.map(entity => this.renderPlot(entity))}
                     {children}
-                </XYChart>
-            </Fragment>
+                </ComposedChart >
         );
     }
 
     renderPlot = (series: TChartSeries) => {
-        return (
-            <LineSeries key={series.key} seriesKey={series.name} data={series.points} stroke={series.color}/>
-        );
+        switch(series.type) {
+            case ChartSeriesType.LINEAR:
+                return (
+                    <Line key={series.key} dataKey={series.key} stroke={series.color}/>
+                );
+            case ChartSeriesType.RANGE:
+                return (
+                    <Area key={series.key} dataKey={series.key} stroke={series.color}/>
+                );
+               }
     }
 }

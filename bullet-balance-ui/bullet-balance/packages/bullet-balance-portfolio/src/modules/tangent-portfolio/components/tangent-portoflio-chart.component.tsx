@@ -38,11 +38,15 @@ function taskRenderer<T>(task: Task<T>, resultRenderer: ResultRenderer<T>): JSX.
 
 export class TangentPortfolioChartComponent extends Component<TangentPortfolioChartProps, {}> {
     render() {
-        const { legend, chartData, allocation, width, height } = this.props;
+        const { chartData, allocation, width, height } = this.props;
         return (
             <div>
+                {taskRenderer(allocation, (portfolio) => {
+                    const risk = (portfolio.risk * 100).toFixed(2);
+                    const performance = (portfolio.performance * 100).toFixed(2);
+                    return <p>Tangent Portfolio: <span>{performance}% </span> at risk <span>{risk}% </span></p>
+                })}
                 {taskRenderer(chartData, (result) => <XYChartComponent chartData={result} width={width} height={height}/>)}
-                {legend.getNullable() && <ChartLegend items={legend.getNullable()}/>}
                 {allocation.getNullable() && this.renderAllocations(allocation.getNullable())}
             </div>
         );
@@ -52,15 +56,16 @@ export class TangentPortfolioChartComponent extends Component<TangentPortfolioCh
         if (portfolio.allocations.length === 0) {
             return null;
         }
-        const risk = (portfolio.risk * 100).toFixed(2);
-        const performance = (portfolio.performance * 100).toFixed(2);
         return (
-            <Fragment>
-                <p>Tangent Portfolio: <span>{performance}% </span> at risk <span>{risk}% </span></p>
-                <p>
+            <table>
+                <tbody>
+                    <tr>
+                        <th>Ticker</th>
+                        <th>Fraction</th>
+                    </tr>
                     {portfolio.allocations.map(this.renderAllocation)}
-                </p>
-            </Fragment>
+                </tbody>
+            </table>    
         );
 
     };
@@ -68,9 +73,10 @@ export class TangentPortfolioChartComponent extends Component<TangentPortfolioCh
     renderAllocation = (allocation: AllocationItem) => {
         const weight = (allocation.weight * 100).toFixed(2);
         return (
-            <Fragment key={allocation.ticker}>
-                <span>{allocation.ticker}</span> <span>{weight}% </span>
-            </Fragment>
+            <tr key={allocation.ticker}>
+                <td>{allocation.ticker}</td> 
+                <td>{weight}% </td>
+            </tr>
         );
     }
 }
