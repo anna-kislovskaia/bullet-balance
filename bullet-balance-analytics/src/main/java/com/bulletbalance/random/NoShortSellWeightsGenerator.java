@@ -8,6 +8,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Generates non-negative weights of all assets
@@ -24,7 +25,7 @@ public class NoShortSellWeightsGenerator implements RandomWeightsGenerator {
 		double[] randomWeights = new double[count];
 		double totalWeight = 0;
 		for (int i = 0; i < count; i++) {
-			randomWeights[i] = rnd.nextInt(101);
+			randomWeights[i] = Math.abs(rnd.nextInt());
 			totalWeight += randomWeights[i];
 		}
 

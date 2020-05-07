@@ -7,6 +7,8 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Checks consistency of weights allocation
@@ -26,6 +28,16 @@ public class RandomWeightsTest {
 			BigDecimal[] weights = weightsGenerator.generateWeights(i);
 			PortfolioUtils.checkWeightsTotal(weights);
 		}
+	}
+
+	@Test
+	public void testDistribution() {
+		Set<BigDecimal[]> probes = new HashSet<>();
+		for (int i = 0; i < 10000; i++) {
+			BigDecimal[] weights = weightsGenerator.generateWeights(2);
+			Assert.assertTrue(probes.add(weights));
+		}
+		System.out.println("");
 	}
 
 	@Test

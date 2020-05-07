@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import java.io.CharArrayReader;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 public class PortfolioTest {
@@ -112,6 +113,12 @@ public class PortfolioTest {
 		double dailyRate = PortfolioUtils.convertAnnualRateToDaily(annualRate);
 		double restoredAnnualRate = PortfolioUtils.convertDailyRateToAnnual(dailyRate);
 		Assert.assertEquals("Annual rate", annualRate, restoredAnnualRate, 0.0005);
+	}
+
+	@Test
+	public void testDateConversion() {
+		Assert.assertEquals("Local date", LocalDate.of(2020, 4, 5), PortfolioUtils.intToLocalDate(20200405));
+		Assert.assertEquals("Local date", LocalDate.of(2015, 11, 19), PortfolioUtils.intToLocalDate(20151119));
 	}
 
 	private Portfolio<String> createPortfolio() {
