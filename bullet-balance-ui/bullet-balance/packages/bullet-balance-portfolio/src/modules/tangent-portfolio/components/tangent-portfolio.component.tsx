@@ -11,24 +11,29 @@ type TangentPortfolioComponentState = {
     samplesCount: number;
     baseRate: number;
     baseRateText: string;
+    tickers: string[];
 }
 
 export class TangentPortfolioComponent extends Component<TangentPortfolioComponentProps, TangentPortfolioComponentState> {
 
     private samples$ = new BehaviorSubject<number>(10000);
     private rate$ = new BehaviorSubject<number>(5.5);
+    private tickers$ = new BehaviorSubject<string[]>([]);
     private sampleSubscription?: Subscription;
     private rateSubscription?: Subscription;
+    private tickerSubscription?: Subscription;
 
     constructor(props: TangentPortfolioComponentProps) {
         super(props);
         this.state = {
             samplesCount: this.samples$.getValue(), 
             baseRate: this.rate$.getValue(), 
-            baseRateText: `${this.rate$.getValue()}`
+            baseRateText: `${this.rate$.getValue()}`,
+            tickers: []
         };
         this.handleSampleChange = this.handleSampleChange.bind(this);
         this.handleRateChange = this.handleRateChange.bind(this);
+        this.handleTickerChange = this.handleTickerChange.bind(this);
     }
 
     componentWillMount() {
@@ -42,6 +47,11 @@ export class TangentPortfolioComponent extends Component<TangentPortfolioCompone
             .pipe(throttleTime(100))
             .pipe(observeOn(animationFrame))
             .subscribe(rate => this.setState({baseRate: rate}));
+        this.tickerSubscription = this.tickers$
+            .asObservable()
+            .pipe(throttleTime(100))
+            .pipe(observeOn(animationFrame))
+            .subscribe(tickers => this.setState({tickers}));
     }
 
     componentWillUnmount() {
@@ -51,12 +61,20 @@ export class TangentPortfolioComponent extends Component<TangentPortfolioCompone
         if (this.rateSubscription) {
             this.rateSubscription.unsubscribe();
         }
+        if (this.tickerSubscription) {
+            this.tickerSubscription.unsubscribe();
+        }
     }
 
     render() {
         return (
             <table>
                 <tbody>
+                    <tr>    
+                        <td>
+                            Portfolio: <input onChange={this.handleTickerChange}/>%
+                        </td>
+                    </tr>
                     <tr>
                         <td>
                             Sample count: <input value={this.state.samplesCount} onChange={this.handleSampleChange}/>
@@ -72,6 +90,7 @@ export class TangentPortfolioComponent extends Component<TangentPortfolioCompone
                             <TangentPortfolioChartContainer 
                                 width={500} 
                                 height={400} 
+                                tickers={this.state.tickers}
                                 samplesCount={this.state.samplesCount} 
                                 baseRate={this.state.baseRate}/>
                         </td>
@@ -86,6 +105,12 @@ export class TangentPortfolioComponent extends Component<TangentPortfolioCompone
         if (count && !isNaN(count)) {
             this.samples$.next(count);
         }
+    }
+
+    handleTickerChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const tickerText: string = event.currentTarget.value;
+        const tokens = tickerText.split(',').map(item => item.trim()).filter(item => item.length > 0);
+        this.tickers$.next(tokens);
     }
 
     handleRateChange = (event: ChangeEvent<HTMLInputElement>) => {

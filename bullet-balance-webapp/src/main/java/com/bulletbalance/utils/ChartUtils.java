@@ -21,15 +21,18 @@ public class ChartUtils {
         }
 
         List<Point> points = new ArrayList<>(allocations.size());
-        Range xRange = new Range().setMax(Double.MIN_VALUE).setMin(Double.MAX_VALUE);
-        Range yRange = new Range().setMax(Double.MIN_VALUE).setMin(Double.MAX_VALUE);
+        points.add(new Point().setX(bendPoint.getWeighthedRisk()).setY(bendPoint.getWeightedReturn()));
+        Range xRange = new Range().setMax(bendPoint.getWeighthedRisk()).setMin(bendPoint.getWeighthedRisk());
+        Range yRange = new Range().setMax(bendPoint.getWeightedReturn()).setMin(bendPoint.getWeightedReturn());
 
         for (AllocationResult allocation : allocations) {
-            points.add(new Point().setX(allocation.getWeighthedRisk()).setY(allocation.getWeightedReturn()));
-            xRange.setMax(Math.max(xRange.getMax(), allocation.getWeighthedRisk()));
-            xRange.setMin(Math.min(xRange.getMin(), allocation.getWeighthedRisk()));
-            yRange.setMax(Math.max(yRange.getMax(), allocation.getWeightedReturn()));
-            yRange.setMin(Math.min(yRange.getMin(), allocation.getWeightedReturn()));
+            if (!yRange.includes(allocation.getWeightedReturn())) {
+                points.add(new Point().setX(allocation.getWeighthedRisk()).setY(allocation.getWeightedReturn()));
+                xRange.setMax(Math.max(xRange.getMax(), allocation.getWeighthedRisk()));
+                xRange.setMin(Math.min(xRange.getMin(), allocation.getWeighthedRisk()));
+                yRange.setMax(Math.max(yRange.getMax(), allocation.getWeightedReturn()));
+                yRange.setMin(Math.min(yRange.getMin(), allocation.getWeightedReturn()));
+            }
         }
 
         return new ChartPlot(xRange, yRange, points);

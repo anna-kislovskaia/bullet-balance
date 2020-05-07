@@ -1,21 +1,21 @@
 import { RxProperties, rxComponentFactory} from "../../../utils/rx.utils";
 import {
-    AllocationItem, PortfolioAllocation, TangentPortfolioChartComponent,
-    TangentPortfolioChartProps
+    TangentPortfolioChartComponent,
+    TangentPortfolioChartProps,
+    PortfolioData
 } from "../components/tangent-portoflio-chart.component";
-import { Shape, TChartData, TPlotLegend, ChartSeriesType, TRangeChartPoint, TNumberChartPoint} from "@bullet-balance/components";
+import {TChartData, ChartSeriesType, TRangeChartPoint, TNumberChartPoint} from "@bullet-balance/components";
 import {MoexDemoService} from "../../../services/moex-demo.service";
 import {distinctUntilChanged, map, shareReplay, switchMap} from "rxjs/internal/operators";
 import {TPoint} from "../../../model/data.model";
 import {Task, TaskUtils} from "../../../utils/task.model";
 import {Observable, combineLatest} from "rxjs/index";
 
-type ExternalProperties = 'width' | 'height' | 'samplesCount' | 'baseRate';
+type ExternalProperties = 'width' | 'height' | 'samplesCount' | 'baseRate' | 'tickers';
 
 const defaults: Partial<TangentPortfolioChartProps> = {
     chartData: TaskUtils.pending,
-    legend: TaskUtils.pending,
-    allocation: TaskUtils.pending
+    portfolios: TaskUtils.pending
 };
 
 const pointRiskComparator = (point1: TPoint, point2: TPoint): number => {
@@ -39,21 +39,25 @@ const props$: RxProperties<ExternalProperties, TangentPortfolioChartProps> = (pr
         .pipe(map(value => value.baseRate / 100))
         .pipe(distinctUntilChanged())
         .pipe(shareReplay(1));
-    const data$ = combineLatest(samplesCount$, baseRate$)
-        .pipe(switchMap(([count, baseRate]) => MoexDemoService.getMoexSampleCurve(count, baseRate)))
+    const tickers$ = props$
+        .pipe(map(value => value.tickers))
+        .pipe(distinctUntilChanged())
+        .pipe(shareReplay(1));
+    const data$ = combineLatest(samplesCount$, baseRate$, tickers$)
+        .pipe(switchMap(([count, baseRate, tickers]) => MoexDemoService.getMoexSampleCurve(tickers, null, null, baseRate, count)))
         .pipe(shareReplay(1));
 
     const chartData$: Observable<Task<TChartData>> = data$
         .pipe(map(task => task.map( data => {
-            const lowestRiskReturn = data.lowest.y;
+            const lowestRiskReturn = data.lowest.performance;
             const upperPoints = data.points.filter(point => point.y >= lowestRiskReturn).sort(pointRiskComparator);
             const lowerPoints = data.points.filter(point => point.y <= lowestRiskReturn).sort(pointRiskComparator);
             const maxRisk = data.points[data.points.length - 1].x;
-            const coef = (data.tangent.y - data.riskFree.y) / data.tangent.x;
-            const maxTangentY = (maxRisk - data.tangent.x) * coef + data.tangent.y;
+            const coef = (data.tangent.performance - data.riskFree.y) / data.tangent.risk;
+            const maxTangentY = (maxRisk - data.tangent.risk) * coef + data.tangent.performance;
             const tangentPoints: TNumberChartPoint[] = [
                 convertPoint(data.riskFree),
-                convertPoint(data.tangent),
+                convertPoint({x: data.tangent.risk, y: data.tangent.performance}),
                 convertPoint({x: maxRisk, y: maxTangentY})
             ];
             const distribution: TRangeChartPoint[] = data.points.map(point => {
@@ -73,24 +77,12 @@ const props$: RxProperties<ExternalProperties, TangentPortfolioChartProps> = (pr
             };
         })));
 
-    const legendData$: Observable<Task<TPlotLegend[]>> = data$.pipe(map(task => task.map(() => {
-        return [
-            { name: "Risk/Return distribution", color: "#79C7E3", shape: Shape.line},
-            { name: "Tangent Portfolio", color: "#79C700", shape: Shape.line},
-        ];
+    const portfolios$: Observable<Task<PortfolioData>> = data$.pipe(map(task => task.map(data => {
+        return {tangent: data.tangent, lowest: data.lowest};
     })));
 
-    const allocation$: Observable<Task<PortfolioAllocation>> = data$.pipe(map(task => task.map(data => {
-        const weights = data.portfolio.weights;
-        const allocations: AllocationItem[] = data.portfolio.instruments.map((ticker, index) => {
-            return {ticker, weight: weights[index]};
-        });
-        allocations.sort((a1, a2) => a1.weight - a2.weight);
-        return {risk: data.tangent.x, performance: data.tangent.y, allocations};
-    })));
-
-    return combineLatest(chartData$, legendData$, allocation$).pipe(map(([chartData, legend, allocation]) => {
-        return {chartData, legend, allocation}
+    return combineLatest(chartData$, portfolios$).pipe(map(([chartData, portfolios]) => {
+        return {chartData, portfolios}
     }));
 };
 

@@ -1,28 +1,23 @@
 import * as React from 'react';
-import { Component, Fragment} from "react";
-import { XYChartComponent, TChartData, ChartLegend, TPlotLegend } from "@bullet-balance/components";
+import {Component} from "react";
+import {XYChartComponent, TChartData } from "@bullet-balance/components";
 import {Task} from "../../../utils/task.model";
-import { LoadingIndicatorComponent } from '../../loading-indicator/loading-indicator.component';
+import {LoadingIndicatorComponent} from '../../loading-indicator/loading-indicator.component';
+import {TPortfolio} from '../../../model/data.model';
 
-export type AllocationItem = {
-    ticker: string;
-    weight: number;
-}
-
-export type PortfolioAllocation = {
-    allocations: AllocationItem[];
-    risk: number;
-    performance: number;
+export type PortfolioData = {
+    tangent: TPortfolio;
+    lowest: TPortfolio;
 }
 
 export interface TangentPortfolioChartProps {
     chartData: Task<TChartData>;
-    allocation: Task<PortfolioAllocation>;
+    portfolios: Task<PortfolioData>;
     width: number;
     height: number;
     samplesCount: number;
     baseRate: number;
-    legend: Task<TPlotLegend[]>;
+    tickers: string[];
 }
 
 type ResultRenderer<T> = (result: T) => JSX.Element;
@@ -39,44 +34,44 @@ function taskRenderer<T>(task: Task<T>, resultRenderer: ResultRenderer<T>): JSX.
 
 export class TangentPortfolioChartComponent extends Component<TangentPortfolioChartProps, {}> {
     render() {
-        const { chartData, allocation, width, height } = this.props;
+        const { chartData, portfolios, width, height } = this.props;
         return (
             <div>
-                {taskRenderer(allocation, (portfolio) => {
-                    const risk = (portfolio.risk * 100).toFixed(2);
-                    const performance = (portfolio.performance * 100).toFixed(2);
+                {taskRenderer(portfolios, (data) => {
+                    const risk = (data.tangent.risk * 100).toFixed(2);
+                    const performance = (data.tangent.performance * 100).toFixed(2);
                     return <p>Tangent Portfolio: <span>{performance}% </span> at risk <span>{risk}% </span></p>
                 })}
                 {taskRenderer(chartData, (result) => <XYChartComponent chartData={result} width={width} height={height}/>)}
-                {allocation.getNullable() && this.renderAllocations(allocation.getNullable())}
+                {portfolios.getNullable() && this.renderAllocations(portfolios.getNullable())}
             </div>
         );
     }
 
-      renderAllocations = (portfolio: PortfolioAllocation) => {
-        if (portfolio.allocations.length === 0) {
-            return null;
-        }
+      renderAllocations = (data: PortfolioData) => {
+        const portfolios = [data.tangent, data.lowest];
+        const tickers = portfolios[0].instruments;
+        const headers = ['Tangent', 'Lowest Risk'];
         return (
             <table>
                 <tbody>
                     <tr>
                         <th>Ticker</th>
-                        <th>Fraction</th>
+                        {headers.map(header => (<th>{header}</th>))}
                     </tr>
-                    {portfolio.allocations.map(this.renderAllocation)}
+                    {tickers.map((ticker, index) => this.renderAllocation(ticker, index, portfolios))}
                 </tbody>
             </table>    
         );
 
     };
 
-    renderAllocation = (allocation: AllocationItem) => {
-        const weight = (allocation.weight * 100).toFixed(2);
+    renderAllocation = (ticker: string, index: number, portfolios: TPortfolio[]) => {
         return (
-            <tr key={allocation.ticker}>
-                <td>{allocation.ticker}</td> 
-                <td>{weight}% </td>
+            <tr key={ticker}>
+                <td>{ticker}</td>
+                {portfolios.map(portfolio => (portfolio.weights[index] * 100).toFixed(2))
+                    .map(weight => <td>{weight}% </td>)} 
             </tr>
         );
     }
