@@ -13,12 +13,14 @@
     "rxjs": "6.3.3",
     "date-fns": "2.13.0",
     "bootstrap": "4.4.1",
+    "react-select": "3.1.0",
     "@bullet-balance/components": "1.0.0"
   },
   "devDependencies": {
     "@types/react": "16.9.34",
     "@types/react-dom": "16.9.7",
     "@types/webpack-env": "1.15.2", 
+    "@types/react-select": "3.0.12",
     "@storybook/react": "5.3.18",
     "awesome-typescript-loader": "5.2.1",
     "babel-loader": "8.1.0",

@@ -6,6 +6,7 @@ import { observeOn, throttleTime} from "rxjs/internal/operators";
 import {animationFrame} from "rxjs/internal/scheduler/animationFrame";
 import { TInstrument } from '../../model/data.model';
 import { Task } from '../../utils/task.model';
+import Select, { ValueType } from 'react-select';
 
 export interface TangentPortfolioComponentProps {
     instruments: Task<TInstrument[]>;
@@ -16,6 +17,11 @@ type TangentPortfolioComponentState = {
     baseRate: number;
     baseRateText: string;
     tickers: string[];
+}
+
+type SelectionOption = {
+    value: string;
+    label: string;
 }
 
 export class TangentPortfolioComponent extends Component<TangentPortfolioComponentProps, TangentPortfolioComponentState> {
@@ -71,15 +77,25 @@ export class TangentPortfolioComponent extends Component<TangentPortfolioCompone
     }
 
     render() {
+        const selectOptions: SelectionOption[] = this.props.instruments
+        .map(instruments => instruments.map(instrument => 
+            {return {value: instrument.ticker, label: `${instrument.ticker} (${instrument.name})`}})).getOrElse([]);
         return (
             <form className="container-fluid">
                 <div className="row">
-                <div className="col-8">
-                            <div className="form-group">
-                                <label htmlFor="tickers">Portfolio</label>
-                                <input className="form-control" id="tickers" onChange={this.handleTickerChange} />
-                            </div>                            
-                  </div>
+                    <div className="col-8">
+                        <div className="form-group">
+                            <label htmlFor="tickers">Portfolio</label>
+                            <Select
+                                    isMulti
+                                    id="tickers"
+                                    options={selectOptions}
+                                    className="basic-multi-select form-control"
+                                    classNamePrefix="select"
+                                    onChange={this.handleTickerChange}
+                            />
+                        </div>                            
+                    </div>
                   </div>
                     <div className="row">
                         <div className="col-4">
@@ -95,7 +111,7 @@ export class TangentPortfolioComponent extends Component<TangentPortfolioCompone
                             </div>                            
                         </div>
                     </div>
-                <div className="row">
+                <div className="row mt-16">
                     <div className="col-12">
                         <TangentPortfolioChartContainer 
                                 width={500} 
@@ -116,10 +132,10 @@ export class TangentPortfolioComponent extends Component<TangentPortfolioCompone
         }
     }
 
-    handleTickerChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const tickerText: string = event.currentTarget.value;
-        const tokens = tickerText.split(',').map(item => item.trim()).filter(item => item.length > 0);
-        this.tickers$.next(tokens);
+    handleTickerChange = (value: ValueType<SelectionOption>) => {
+        const options = value as SelectionOption[];
+        const tickers = options.map(option => option.value);
+        this.tickers$.next(tickers);
     }
 
     handleRateChange = (event: ChangeEvent<HTMLInputElement>) => {

@@ -40,7 +40,7 @@ export class TangentPortfolioChartComponent extends Component<TangentPortfolioCh
                 {taskRenderer(portfolios, (data) => {
                     const risk = (data.tangent.risk * 100).toFixed(2);
                     const performance = (data.tangent.performance * 100).toFixed(2);
-                    return <p>Tangent Portfolio: <span>{performance}% </span> at risk <span>{risk}% </span></p>
+                    return <h3>Tangent Portfolio: <span>{performance}% </span> at risk <span>{risk}% </span></h3>
                 })}
                 {taskRenderer(chartData, (result) => <XYChartComponent chartData={result} width={width} height={height}/>)}
                 {portfolios.getNullable() && this.renderAllocations(portfolios.getNullable())}
@@ -53,15 +53,21 @@ export class TangentPortfolioChartComponent extends Component<TangentPortfolioCh
         const tickers = portfolios[0].instruments;
         const headers = ['Tangent', 'Lowest Risk'];
         return (
-            <table>
-                <tbody>
+            <div className="row mt-16">
+            <div className="col-8">
+            <table className="table table-hover">
+                <thead>
                     <tr>
-                        <th>Ticker</th>
-                        {headers.map(header => (<th>{header}</th>))}
+                        <th scope="col">Ticker</th>
+                        {headers.map(header => (<th scope="col">{header}</th>))}
                     </tr>
+                </thead>
+                <tbody>
                     {tickers.map((ticker, index) => this.renderAllocation(ticker, index, portfolios))}
                 </tbody>
             </table>    
+            </div>
+            </div>
         );
 
     };
@@ -69,9 +75,9 @@ export class TangentPortfolioChartComponent extends Component<TangentPortfolioCh
     renderAllocation = (ticker: string, index: number, portfolios: TPortfolio[]) => {
         return (
             <tr key={ticker}>
-                <td>{ticker}</td>
+                <td scope="row">{ticker}</td>
                 {portfolios.map(portfolio => (portfolio.weights[index] * 100).toFixed(2))
-                    .map(weight => <td>{weight}% </td>)} 
+                    .map((weight, i) => <td key={`${ticker}-${i}`}>{weight}% </td>)} 
             </tr>
         );
     }

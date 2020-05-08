@@ -21,6 +21,9 @@ export class TaskSuccess<T>  {
     getNullable(): T | null {
         return this.value;
     }
+    getOrElse(other: T): T {
+        return this.value;
+    }
 }
 
 export class TaskFailure<T> {
@@ -44,6 +47,9 @@ export class TaskFailure<T> {
     getNullable(): T | null {
         return null;
     }
+    getOrElse(other: T): T {
+        return other;
+    }
 }
 
 export class TaskPending<T> {
@@ -61,6 +67,9 @@ export class TaskPending<T> {
     }
     getNullable(): T | null {
         return null;
+    }
+    getOrElse(other: T): T {
+        return other;
     }
 }
 
