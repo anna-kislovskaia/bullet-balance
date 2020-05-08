@@ -1,14 +1,14 @@
-import { RxProperties, rxComponentFactory} from "../../../utils/rx.utils";
+import { RxProperties, rxComponentFactory} from "../../utils/rx.utils";
 import {
     TangentPortfolioChartComponent,
     TangentPortfolioChartProps,
     PortfolioData
-} from "../components/tangent-portoflio-chart.component";
+} from "./tangent-portoflio-chart.component";
 import {TChartData, ChartSeriesType, TRangeChartPoint, TNumberChartPoint} from "@bullet-balance/components";
-import {MoexDemoService} from "../../../services/moex-demo.service";
+import {MoexDemoService} from "../../services/moex-demo.service";
 import {distinctUntilChanged, map, shareReplay, switchMap} from "rxjs/internal/operators";
-import {TPoint} from "../../../model/data.model";
-import {Task, TaskUtils} from "../../../utils/task.model";
+import {TPoint} from "../../model/data.model";
+import {Task, TaskUtils} from "../../utils/task.model";
 import {Observable, combineLatest} from "rxjs/index";
 
 type ExternalProperties = 'width' | 'height' | 'samplesCount' | 'baseRate' | 'tickers';

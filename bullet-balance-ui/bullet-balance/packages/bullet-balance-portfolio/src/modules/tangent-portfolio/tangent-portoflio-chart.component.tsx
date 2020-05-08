@@ -1,9 +1,9 @@
 import * as React from 'react';
 import {Component} from "react";
 import {XYChartComponent, TChartData } from "@bullet-balance/components";
-import {Task} from "../../../utils/task.model";
-import {LoadingIndicatorComponent} from '../../loading-indicator/loading-indicator.component';
-import {TPortfolio} from '../../../model/data.model';
+import {Task} from "../../utils/task.model";
+import {LoadingIndicatorComponent} from '../loading-indicator/loading-indicator.component';
+import {TPortfolio} from '../../model/data.model';
 
 export type PortfolioData = {
     tangent: TPortfolio;

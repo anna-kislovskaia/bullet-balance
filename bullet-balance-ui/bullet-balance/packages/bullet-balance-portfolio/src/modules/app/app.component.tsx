@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Component } from "react";
-import {TangentPortfolioComponent} from "../tangent-portfolio/components/tangent-portfolio.component";
+import {TangentPortfolioComponent} from "../tangent-portfolio/tangent-portfolio.component";
 import './app.styles.scss';
 
 export interface AppComponentProps { compiler: string; framework: string; }

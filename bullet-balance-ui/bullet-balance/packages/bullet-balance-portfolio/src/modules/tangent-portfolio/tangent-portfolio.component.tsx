@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Component, ChangeEvent } from "react";
-import {TangentPortfolioChartContainer} from "../containers/tangent-portfolio-chart.container";
+import {TangentPortfolioChartContainer} from "./tangent-portfolio-chart.container";
 import {BehaviorSubject, Subscription} from "rxjs/index";
 import { observeOn, throttleTime} from "rxjs/internal/operators";
 import {animationFrame} from "rxjs/internal/scheduler/animationFrame";
