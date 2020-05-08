@@ -1,5 +1,6 @@
 package com.bulletbalance.service;
 
+import com.bulletbalance.model.InstrumentProfile;
 import com.google.common.base.Preconditions;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,8 +12,7 @@ import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class MoexInstrumentService {
@@ -46,4 +46,9 @@ public class MoexInstrumentService {
         return profile;
     }
 
+    public List<InstrumentProfile> getInstruments() {
+        ArrayList<InstrumentProfile> profiles = new ArrayList<>(instruments.values());
+        profiles.sort(InstrumentProfile.TICKER_COMPARATOR);
+        return profiles;
+    }
 }

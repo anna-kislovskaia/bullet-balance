@@ -68,35 +68,40 @@ export class TangentPortfolioComponent extends Component<TangentPortfolioCompone
 
     render() {
         return (
-            <table>
-                <tbody>
-                    <tr>    
-                        <td>
-                            Portfolio: <input onChange={this.handleTickerChange}/>%
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Sample count: <input value={this.state.samplesCount} onChange={this.handleSampleChange}/>
-                        </td>
-                    </tr>
-                    <tr>    
-                        <td>
-                            Risk free rate: <input value={this.state.baseRateText} onChange={this.handleRateChange}/>%
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <TangentPortfolioChartContainer 
+            <form className="container-fluid">
+                <div className="row">
+                <div className="col-8">
+                            <div className="form-group">
+                                <label htmlFor="tickers">Portfolio</label>
+                                <input className="form-control" id="tickers" onChange={this.handleTickerChange} />
+                            </div>                            
+                  </div>
+                  </div>
+                    <div className="row">
+                        <div className="col-4">
+                            <div className="form-group">
+                                <label htmlFor="baseRate">Risk free rate</label>
+                                <input className="form-control" id="baseRate" value={this.state.baseRateText}  onChange={this.handleRateChange} />
+                            </div>                            
+                        </div>
+                        <div className="col-4">
+                            <div className="form-group">
+                                <label htmlFor="samples">Samples count</label>
+                                <input className="form-control" id="samples" value={this.state.samplesCount}  onChange={this.handleSampleChange} />
+                            </div>                            
+                        </div>
+                    </div>
+                <div className="row">
+                    <div className="col-12">
+                        <TangentPortfolioChartContainer 
                                 width={500} 
                                 height={400} 
                                 tickers={this.state.tickers}
                                 samplesCount={this.state.samplesCount} 
                                 baseRate={this.state.baseRate}/>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                    </div>
+                </div>
+            </form>
         );
     }
 

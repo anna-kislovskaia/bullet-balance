@@ -12,6 +12,7 @@
     "react-dom": "16.13.1",
     "rxjs": "6.3.3",
     "date-fns": "2.13.0",
+    "bootstrap": "4.4.1",
     "@bullet-balance/components": "1.0.0"
   },
   "devDependencies": {
@@ -23,16 +24,19 @@
     "babel-loader": "8.1.0",
     "concurrently": "4.1.0",
     "css-loader": "1.0.1",
+    "mini-css-extract-plugin": "0.9.0",
+    "sass-loader": "8.0.2",
+    "node-sass": "4.14.1",
     "express": "4.16.4",
     "express-http-proxy": "^1.5.0",     
     "html-webpack-plugin": "3.2.0",
     "source-map-loader": "0.2.4",
     "style-loader": "^0.23.1",
     "typescript": "3.8.3",
-    "webpack": "4.26.0",
-    "webpack-cli": "3.1.2",
-    "webpack-dev-middleware": "3.4.0",
-    "webpack-hot-middleware": "2.24.3"
+    "webpack": "4.43.0",
+    "webpack-cli": "3.3.11",
+    "webpack-dev-middleware": "3.7.2",
+    "webpack-hot-middleware": "2.25.0"
   },
   "scripts": {
     "jest": "jest",
