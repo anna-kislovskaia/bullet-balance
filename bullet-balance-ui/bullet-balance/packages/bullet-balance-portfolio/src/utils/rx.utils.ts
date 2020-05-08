@@ -23,14 +23,14 @@ export function rxComponentFactory<K extends keyof P, P extends object = never>(
             private results$ = select(this.props$.asObservable());
             private resultsSubscription?: Subscription;
 
-            componentWillMount() {
+            componentDidMount() {
                 this.resultsSubscription = this.results$
                     .pipe(observeOn(animationFrame))
                     .subscribe(state => this.setState(state));
             }
 
-            componentWillReceiveProps(props: Readonly<P>) {
-                this.props$.next(props);
+            componentDidUpdate(prev: Readonly<P>) {
+                this.props$.next(this.props);
             }
 
             componentWillUnmount() {

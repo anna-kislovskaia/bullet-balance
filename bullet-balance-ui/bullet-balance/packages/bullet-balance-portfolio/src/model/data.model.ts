@@ -7,12 +7,18 @@ export type TPoint = {
 export type TPortfolio = {
     instruments: string[];
     weights: number[];
+    risk: number;
+    performance: number;
 }
 
 export type TTangentPortfolio = {
-    portfolio: TPortfolio;
     points: TPoint[];
-    lowest: TPoint;
-    tangent: TPoint;
+    lowest: TPortfolio;
+    tangent: TPortfolio;
     riskFree: TPoint;
+}
+
+export type TInstrument = {
+    ticker: string;
+    name: string;
 }

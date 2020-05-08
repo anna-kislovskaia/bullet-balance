@@ -1,5 +1,6 @@
 package com.bulletbalance.analytics;
 
+import com.bulletbalance.utils.PortfolioUtils;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sun.istack.internal.NotNull;
 import lombok.AllArgsConstructor;
@@ -43,5 +44,12 @@ public class AllocationResult {
 				"return=" + weightedReturn +
 				", risk=" + weighthedRisk +
 				'}';
+	}
+
+	public AllocationResult annualize() {
+		return new AllocationResult(
+				weights,
+				PortfolioUtils.convertDailyRateToAnnual(weightedReturn),
+				PortfolioUtils.convertDailyRiskToAnnual(weighthedRisk));
 	}
 }

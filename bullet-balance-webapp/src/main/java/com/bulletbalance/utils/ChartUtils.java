@@ -1,14 +1,12 @@
 package com.bulletbalance.utils;
 
 import com.bulletbalance.analytics.AllocationResult;
-import com.bulletbalance.analytics.TangentPortfolioSelector;
 import com.bulletbalance.model.chart.ChartPlot;
 import com.bulletbalance.model.chart.Point;
 import com.bulletbalance.model.chart.Range;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ChartUtils {
 
@@ -22,26 +20,21 @@ public class ChartUtils {
             throw new IllegalArgumentException("Samples count is insufficient");
         }
 
-        List<AllocationResult> upperArc = TangentPortfolioSelector.filterSamples(
-                allocations.stream().filter(sample -> sample.getWeightedReturn() > bendPoint.getWeightedReturn()).collect(Collectors.toList()),
-                TangentPortfolioSelector.RETURN_COMPARATOR);
-        List<AllocationResult> lowerArc = TangentPortfolioSelector.filterSamples(
-                allocations.stream().filter(sample -> sample.getWeightedReturn() < bendPoint.getWeightedReturn()).collect(Collectors.toList()),
-                TangentPortfolioSelector.RETURN_COMPARATOR.reversed());
+        List<Point> points = new ArrayList<>(allocations.size());
+        points.add(new Point().setX(bendPoint.getWeighthedRisk()).setY(bendPoint.getWeightedReturn()));
+        Range xRange = new Range().setMax(bendPoint.getWeighthedRisk()).setMin(bendPoint.getWeighthedRisk());
+        Range yRange = new Range().setMax(bendPoint.getWeightedReturn()).setMin(bendPoint.getWeightedReturn());
 
-        List<AllocationResult> curve = new ArrayList<>(allocations.size());
-        curve.add(bendPoint);
-        curve.addAll(upperArc);
-        curve.addAll(lowerArc);
-        curve.sort(AllocationResult.RISK_COMPARATOR);
+        for (AllocationResult allocation : allocations) {
+            if (!yRange.includes(allocation.getWeightedReturn())) {
+                points.add(new Point().setX(allocation.getWeighthedRisk()).setY(allocation.getWeightedReturn()));
+                xRange.setMax(Math.max(xRange.getMax(), allocation.getWeighthedRisk()));
+                xRange.setMin(Math.min(xRange.getMin(), allocation.getWeighthedRisk()));
+                yRange.setMax(Math.max(yRange.getMax(), allocation.getWeightedReturn()));
+                yRange.setMin(Math.min(yRange.getMin(), allocation.getWeightedReturn()));
+            }
+        }
 
-        List<Point> points = curve.stream()
-                .map(sample -> new Point().setX(sample.getWeighthedRisk()).setY(sample.getWeightedReturn()))
-                .collect(Collectors.toList());
-        Range xRange = new Range().setMin(points.get(0).getX()).setMax(points.get(points.size() - 1).getX());
-        Range yRange = new Range()
-                .setMin(lowerArc.get(lowerArc.size() - 1).getWeightedReturn())
-                .setMax(upperArc.get(upperArc.size() - 1).getWeightedReturn());
         return new ChartPlot(xRange, yRange, points);
     }
 }

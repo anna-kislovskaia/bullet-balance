@@ -14,4 +14,8 @@ public class Range {
     private double min;
     @JsonProperty
     private double max;
+
+    public boolean includes(double value) {
+        return value >= min && value <= max;
+    }
 }
