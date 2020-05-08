@@ -4,8 +4,12 @@ import {TangentPortfolioChartContainer} from "./tangent-portfolio-chart.containe
 import {BehaviorSubject, Subscription} from "rxjs/index";
 import { observeOn, throttleTime} from "rxjs/internal/operators";
 import {animationFrame} from "rxjs/internal/scheduler/animationFrame";
+import { TInstrument } from '../../model/data.model';
+import { Task } from '../../utils/task.model';
 
-export interface TangentPortfolioComponentProps {}
+export interface TangentPortfolioComponentProps {
+    instruments: Task<TInstrument[]>;
+}
 
 type TangentPortfolioComponentState = {
     samplesCount: number;

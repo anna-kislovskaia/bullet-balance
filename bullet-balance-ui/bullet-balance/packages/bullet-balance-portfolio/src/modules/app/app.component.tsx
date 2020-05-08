@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Component } from "react";
-import {TangentPortfolioComponent} from "../tangent-portfolio/tangent-portfolio.component";
 import './app.styles.scss';
+import { TangentPortfolioContainer } from '../tangent-portfolio/tangent-portfolio.container';
 
 export interface AppComponentProps { compiler: string; framework: string; }
 
@@ -13,7 +13,7 @@ export class AppComponent extends Component<AppComponentProps, {}> {
                     <h1>Markowitz Tangent Portfolio Calculator</h1>
                 </div>
                 <div className="row">
-                    <TangentPortfolioComponent />
+                    <TangentPortfolioContainer />
                 </div>    
             </div>
         );

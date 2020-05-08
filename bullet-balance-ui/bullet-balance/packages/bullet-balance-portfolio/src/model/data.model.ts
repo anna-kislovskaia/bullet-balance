@@ -17,3 +17,8 @@ export type TTangentPortfolio = {
     tangent: TPortfolio;
     riskFree: TPoint;
 }
+
+export type TInstrument = {
+    ticker: string;
+    name: string;
+}
