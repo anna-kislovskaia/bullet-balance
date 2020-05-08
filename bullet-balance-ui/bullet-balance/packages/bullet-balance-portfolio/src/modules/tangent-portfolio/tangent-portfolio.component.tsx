@@ -46,7 +46,7 @@ export class TangentPortfolioComponent extends Component<TangentPortfolioCompone
         this.handleTickerChange = this.handleTickerChange.bind(this);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.sampleSubscription = this.samples$
             .asObservable()
             .pipe(throttleTime(100))

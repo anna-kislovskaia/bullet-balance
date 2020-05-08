@@ -59,7 +59,7 @@ export class TangentPortfolioChartComponent extends Component<TangentPortfolioCh
                 <thead>
                     <tr>
                         <th scope="col">Ticker</th>
-                        {headers.map(header => (<th scope="col">{header}</th>))}
+                        {headers.map(header => (<th key={header} scope="col">{header}</th>))}
                     </tr>
                 </thead>
                 <tbody>
