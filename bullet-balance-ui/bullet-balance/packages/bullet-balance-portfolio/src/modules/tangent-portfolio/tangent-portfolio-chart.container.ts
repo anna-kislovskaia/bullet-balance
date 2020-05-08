@@ -11,7 +11,7 @@ import {TPoint} from "../../model/data.model";
 import {Task, TaskUtils} from "../../utils/task.model";
 import {Observable, combineLatest} from "rxjs/index";
 
-type ExternalProperties = 'width' | 'height' | 'samplesCount' | 'baseRate' | 'tickers';
+type ExternalProperties = 'width' | 'height' | 'samplesCount' | 'baseRate' | 'tickers' | 'startDate' | 'endDate';
 
 const defaults: Partial<TangentPortfolioChartProps> = {
     chartData: TaskUtils.pending,
@@ -43,8 +43,17 @@ const props$: RxProperties<ExternalProperties, TangentPortfolioChartProps> = (pr
         .pipe(map(value => value.tickers))
         .pipe(distinctUntilChanged())
         .pipe(shareReplay(1));
-    const data$ = combineLatest(samplesCount$, baseRate$, tickers$)
-        .pipe(switchMap(([count, baseRate, tickers]) => MoexDemoService.getMoexSampleCurve(tickers, null, null, baseRate, count)))
+    const startDate$ = props$
+        .pipe(map(value => value.startDate))
+        .pipe(distinctUntilChanged())
+        .pipe(shareReplay(1));
+    const endDate$ = props$
+        .pipe(map(value => value.endDate))
+        .pipe(distinctUntilChanged())
+        .pipe(shareReplay(1));
+    const data$ = combineLatest(tickers$, startDate$, endDate$, samplesCount$, baseRate$)
+        .pipe(switchMap(([tickers, startDate, endDate, count, baseRate]) => 
+                MoexDemoService.getMoexSampleCurve(tickers, startDate, endDate, baseRate, count)))
         .pipe(shareReplay(1));
 
     const chartData$: Observable<Task<TChartData>> = data$

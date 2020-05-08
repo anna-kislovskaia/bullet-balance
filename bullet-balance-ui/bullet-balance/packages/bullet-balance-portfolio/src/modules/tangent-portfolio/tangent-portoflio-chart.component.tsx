@@ -15,6 +15,8 @@ export interface TangentPortfolioChartProps {
     portfolios: Task<PortfolioData>;
     width: number;
     height: number;
+    startDate?: Date;
+    endDate?: Date; 
     samplesCount: number;
     baseRate: number;
     tickers: string[];

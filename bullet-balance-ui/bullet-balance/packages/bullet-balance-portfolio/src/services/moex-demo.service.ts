@@ -19,11 +19,9 @@ export namespace MoexDemoService {
 
 
     export const getMoexSampleCurve = (tickers: string[], fromDate?: Date, toDate?: Date, baseRate?: number, samplesCount?: number): Observable<Task<TTangentPortfolio>> => {
-        if (tickers.length === 0) {
+        if (tickers.length === 0 || !fromDate || !toDate) {
             return illegalArguments;
         }
-        toDate = toDate || new Date();
-        fromDate = fromDate || addDays(toDate, -30);
         const fromDateStr = format(fromDate, DATE_FORMAT);
         const toDateStr = format(toDate, DATE_FORMAT);
         let url = `api/demo/moex/portfolio?sampleCount=${samplesCount}&tickers=${tickers.join(',')}&fromDate=${fromDateStr}&toDate=${toDateStr}`;
