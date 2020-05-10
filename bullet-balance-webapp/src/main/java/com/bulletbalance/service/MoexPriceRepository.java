@@ -19,17 +19,20 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 public class MoexPriceRepository {
     private static final Logger log = LogManager.getLogger(MoexPriceRepository.class);
-    private static int PRICE_INDEX = 4;
-    private static int DATE_INDEX = 2;
+    private static final int PRICE_INDEX = 4;
+    private static final int DATE_INDEX = 2;
+    private static final int MIN_REQUEST_INTERVAL = 5 * 1000;
 
     private final Map<String, NavigableMap<LocalDate, Double>> instrumentPrices = new ConcurrentHashMap<>();
     private final RestTemplate restTemplate = new RestTemplate();
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private final AtomicLong requestTimestamp = new AtomicLong();
 
     @Value("${moex.export.host}")
     private String host;
@@ -37,7 +40,7 @@ public class MoexPriceRepository {
     @Autowired
     private MoexInstrumentService instrumentService;
 
-    public List<Double> getPrices(String ticker, LocalDate startDate, LocalDate endDate) {
+    public Map<LocalDate, Double> getPrices(String ticker, LocalDate startDate, LocalDate endDate) {
         Preconditions.checkArgument(startDate.isBefore(endDate), "Start date must be before end date");
         MoexInstrumentProfile instrumentProfile = instrumentService.getProfile(ticker);
         NavigableMap<LocalDate, Double> prices = getPrices(ticker);
@@ -48,12 +51,29 @@ public class MoexPriceRepository {
         } else if (startDate.isBefore(earliest)) {
             loadPrices(instrumentProfile, startDate, earliest);
         }
-        return new ArrayList<>(prices.subMap(startDate, true, endDate, true).values());
+        return new HashMap<>(prices.subMap(startDate, true, endDate, true));
     }
 
-    private void loadPrices(MoexInstrumentProfile profile, LocalDate fromDate, LocalDate toDate) {
+    private void loadPrices(MoexInstrumentProfile profile, LocalDate startDate, LocalDate toDate) {
+        try {
+            while (true) {
+                long timestamp = requestTimestamp.get();
+                long delay = Math.max(timestamp + MIN_REQUEST_INTERVAL - System.currentTimeMillis(), 0);
+                if (requestTimestamp.compareAndSet(timestamp, timestamp + MIN_REQUEST_INTERVAL)) {
+                    scheduler.schedule(() -> loadPricesImpl(profile, startDate, toDate), delay, TimeUnit.MILLISECONDS).get();
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            log.error("Failed to load prices for {} {}-{} ", profile.getTicker(), startDate, toDate);
+        }
+    }
+
+    private void loadPricesImpl(MoexInstrumentProfile profile, LocalDate startDate, LocalDate toDate) {
+        // correct to year start
+        LocalDate fromDate = LocalDate.of(startDate.getYear(), 1, 1);
         String ticker = profile.getTicker();
-        log.info("Loading {} daily close {} - {} ", ticker, fromDate, toDate);
+        log.info("Loading {} daily close {}-{} ", ticker, fromDate, toDate);
         String url = new StringBuilder()
                 .append("http://")
                 .append(host)
@@ -67,10 +87,10 @@ public class MoexPriceRepository {
                 .append("&f=").append(ticker)
                 .append("&yf=").append(fromDate.getYear())
                 .append("&mf=").append(fromDate.getMonthValue() - 1)
-                .append("&df=").append(fromDate.getDayOfMonth() - 1)
+                .append("&df=").append(fromDate.getDayOfMonth())
                 .append("&yt=").append(toDate.getYear())
                 .append("&mt=").append(toDate.getMonthValue() - 1)
-                .append("&dt=").append(toDate.getDayOfMonth() - 1)
+                .append("&dt=").append(toDate.getDayOfMonth())
                 .toString();
         log.info("URL {} ", url);
 
@@ -85,6 +105,7 @@ public class MoexPriceRepository {
             InputStream content = clientHttpResponse.getBody();
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(content));
             bufferedReader.lines().forEach(line -> {
+                log.info(line);
                 String[] tokens = line.split(";");
                 Double price = Double.valueOf(tokens[PRICE_INDEX]);
                 LocalDate date = PortfolioUtils.intToLocalDate(Integer.valueOf(tokens[DATE_INDEX]));
