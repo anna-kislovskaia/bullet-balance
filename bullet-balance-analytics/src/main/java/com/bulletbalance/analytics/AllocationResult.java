@@ -46,10 +46,10 @@ public class AllocationResult {
 				'}';
 	}
 
-	public AllocationResult annualize() {
+	public AllocationResult annualize(double size) {
 		return new AllocationResult(
 				weights,
 				PortfolioUtils.convertDailyRateToAnnual(weightedReturn),
-				PortfolioUtils.convertDailyRiskToAnnual(weighthedRisk));
+				PortfolioUtils.convertDailyRiskToAnnual(weighthedRisk, size));
 	}
 }

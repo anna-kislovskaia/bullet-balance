@@ -32,7 +32,7 @@ public class MoexPriceRepository {
     private final Map<String, NavigableMap<LocalDate, Double>> instrumentPrices = new ConcurrentHashMap<>();
     private final RestTemplate restTemplate = new RestTemplate();
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    private final AtomicLong requestTimestamp = new AtomicLong();
+    private final AtomicLong requestTimestamp = new AtomicLong(System.currentTimeMillis());
 
     @Value("${moex.export.host}")
     private String host;
