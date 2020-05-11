@@ -32,7 +32,7 @@ public class PortfolioAllocationService {
         analyzer.setPortfolio(portfolio);
         List<AllocationResult> samples = analyzer.generate()
                 .stream()
-                .map(AllocationResult::annualize)
+                .map(allocationResult -> allocationResult.annualize(portfolio.getSize()))
                 .collect(Collectors.toList());
         AllocationResult lowestRisk = LOWEST_RISK_SELECTOR.selectResult(samples);
         log.info("Lowest risk porfolio {}", lowestRisk);

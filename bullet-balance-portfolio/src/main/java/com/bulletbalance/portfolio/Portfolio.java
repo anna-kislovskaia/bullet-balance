@@ -190,6 +190,10 @@ public class Portfolio<K extends Comparable<K>> {
 		return profiles.get(assetKey);
 	}
 
+	public int getSize() {
+		return size;
+	}
+
 	/**
 	 * Asset pair identifier
 	 */
