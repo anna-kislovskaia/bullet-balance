@@ -105,6 +105,10 @@ public class AssetProfile<K extends Comparable<K>> {
 		return maxPrice;
 	}
 
+	public double getLastPrice() {
+		return prices[prices.length - 1];
+	}
+
 	/**
 	 * Implied rate of investing to asset during given period
 	 * @return implied rate in fractions

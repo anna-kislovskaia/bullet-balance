@@ -23,7 +23,7 @@ public class PortfolioAllocationService {
     private static final LeastRiskyAllocationSelector LOWEST_RISK_SELECTOR = new LeastRiskyAllocationSelector();
     private static final Logger log = LoggerFactory.getLogger(MoexDemoController.class);
 
-    public TangentPortfolioAnalytics getTangentPortfolio(Portfolio portfolio, double riskFreeRate, int sampleCount) {
+    public TangentPortfolioAnalytics getTangentPortfolio(Portfolio<String> portfolio, double riskFreeRate, int sampleCount) {
         log.info("Calculating tangent portfolio for {} base rate {} and sample count {}",
                 portfolio.getAssetKeys(), riskFreeRate, sampleCount);
         AllocationSamplesGenerator analyzer = new AllocationSamplesGenerator();
@@ -42,7 +42,10 @@ public class PortfolioAllocationService {
             tangentPortfolio = new AllocationResult(new BigDecimal[0], riskFreeRate, lowestRisk.getWeighthedRisk());
         }
         ChartPlot plot = ChartUtils.createPlot(samples, lowestRisk);
-        return new TangentPortfolioAnalytics(portfolio.getAssetKeys(), lowestRisk, tangentPortfolio, plot, riskFreeRate);
+        List<Double> lastPrices = portfolio.getAssetKeys().stream()
+                .map(ticker -> portfolio.getProfile(ticker).getLastPrice())
+                .collect(Collectors.toList());
+        return new TangentPortfolioAnalytics(portfolio.getAssetKeys(), lastPrices, lowestRisk, tangentPortfolio, plot, riskFreeRate);
     }
 }
 
