@@ -6,6 +6,7 @@ export type TPoint = {
 
 export type TPortfolio = {
     instruments: string[];
+    lastPrices: number[];
     weights: number[];
     risk: number;
     performance: number;

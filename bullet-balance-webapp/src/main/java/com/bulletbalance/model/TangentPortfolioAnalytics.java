@@ -19,6 +19,10 @@ public class TangentPortfolioAnalytics {
 
     @NotNull @NonNull
     @JsonProperty
+    List<Double> lastPrices;
+
+    @NotNull @NonNull
+    @JsonProperty
     AllocationResult lowestRiskAllocation;
 
     @NotNull @NonNull

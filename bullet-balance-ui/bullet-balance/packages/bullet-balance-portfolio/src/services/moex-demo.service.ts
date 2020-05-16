@@ -34,14 +34,17 @@ export namespace MoexDemoService {
     };
 
     const parseTangentPortfolio = (raw: any): TTangentPortfolio => {
+        const lastPrices = raw.lastPrices;
         const tangent: TPortfolio = {
             instruments: raw.instruments,
+            lastPrices,
             weights: raw.tangentPortfolioAllocation.weights,
             risk: raw.tangentPortfolioAllocation.weighthedRisk, 
             performance: raw.tangentPortfolioAllocation.weightedReturn 
         };
         const lowest: TPortfolio = {
             instruments: raw.instruments,
+            lastPrices,
             weights: raw.lowestRiskAllocation.weights,
             risk: raw.lowestRiskAllocation.weighthedRisk, 
             performance: raw.lowestRiskAllocation.weightedReturn
