@@ -58,8 +58,9 @@ public class MoexPriceRepository {
         try {
             while (true) {
                 long timestamp = requestTimestamp.get();
-                long delay = Math.max(timestamp + MIN_REQUEST_INTERVAL - System.currentTimeMillis(), 0);
-                if (requestTimestamp.compareAndSet(timestamp, timestamp + MIN_REQUEST_INTERVAL)) {
+                long now = System.currentTimeMillis();
+                long delay = Math.max(timestamp + MIN_REQUEST_INTERVAL - now, 0);
+                if (requestTimestamp.compareAndSet(timestamp, Math.max(now, timestamp) + MIN_REQUEST_INTERVAL)) {
                     scheduler.schedule(() -> loadPricesImpl(profile, startDate, toDate), delay, TimeUnit.MILLISECONDS).get();
                     break;
                 }
