@@ -39,7 +39,7 @@ export function TangentPortfolioAllocationComponent(props: TangentPortfolioAlloc
   const renderAllocations = (data: PortfolioData, totalInvestments: number): JSX.Element => {
     const portfolios = [data.tangent, data.lowest];
     const tickers = portfolios[0].instruments;
-    const headers = ['Tangent', 'Lowest Risk', 'Last', 'Equities Count'];
+    const headers = ['Tangent', 'Lowest Risk', 'Last', 'Equities Count Tangent', 'Equities Count Lowest'];
     return (
         <div className="row mt-16">
         <div className="col-8">
@@ -63,8 +63,8 @@ export function TangentPortfolioAllocationComponent(props: TangentPortfolioAlloc
  const renderAllocation = (ticker: string, index: number, portfolios: TPortfolio[], totalInvestments: number) => {
      const tangent = portfolios[0];
      const lastPrice = tangent.lastPrices[index];
-     const wieght = tangent.weights[index];
-     const equitiesCount = Math.round((totalInvestments * wieght) / lastPrice);
+     const equitiesCount = Math.round((totalInvestments * tangent.weights[index]) / lastPrice);
+     const lowestCount = Math.round((totalInvestments * portfolios[1].weights[index]) / lastPrice); 
     return (
         <tr key={ticker}>
             <td scope="row">{ticker}</td>
@@ -72,6 +72,7 @@ export function TangentPortfolioAllocationComponent(props: TangentPortfolioAlloc
                 .map((weight, i) => <td key={`wieght-${i}`}>{weight}% </td>)}
             <td>{lastPrice}</td>     
             <td>{equitiesCount}</td>     
+            <td>{lowestCount}</td>     
         </tr>
     );
 }
