@@ -19,7 +19,7 @@ public class TangentPortfolioAnalytics {
 
     @NotNull @NonNull
     @JsonProperty
-    List<Double> lastPrices;
+    List<InstrumentStatistics> statistics;
 
     @NotNull @NonNull
     @JsonProperty
