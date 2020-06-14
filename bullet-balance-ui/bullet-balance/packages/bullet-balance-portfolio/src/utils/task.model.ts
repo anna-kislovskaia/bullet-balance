@@ -1,5 +1,5 @@
+import { some, Optional, none, mapper } from "../model/optional.model";
 
-export declare type mapper<A, B> = (a: A) => B;
 
 export class TaskSuccess<T>  {
     readonly value: T;
@@ -15,14 +15,13 @@ export class TaskSuccess<T>  {
     isPending(){
         return false;
     }
+
     map<P>(func: mapper<T, P>): Task<P> {
         return new TaskSuccess(func(this.value));
     }
-    getNullable(): T | null {
-        return this.value;
-    }
-    getOrElse(other: T): T {
-        return this.value;
+
+    optional(): Optional<T> {
+        return some(this.value);
     }
 }
 
@@ -41,14 +40,13 @@ export class TaskFailure<T> {
     isPending(){
         return false;
     }
+
     map<P>(func: mapper<T, P>): Task<P> {
         return this as any;
     }
-    getNullable(): T | null {
-        return null;
-    }
-    getOrElse(other: T): T {
-        return other;
+
+    optional(): Optional<T> {
+        return none;
     }
 }
 
@@ -62,14 +60,13 @@ export class TaskPending<T> {
     isPending(){
         return true;
     }
+
     map<P>(func: mapper<T, P>): Task<P> {
         return this as any;
     }
-    getNullable(): T | null {
-        return null;
-    }
-    getOrElse(other: T): T {
-        return other;
+
+    optional(): Optional<T> {
+        return none;
     }
 }
 

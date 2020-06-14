@@ -33,7 +33,7 @@ public class PortfolioUtils {
 	}
 
 	public static double convertDailyRiskToAnnual(double risk, double size) {
-		return risk * Math.sqrt(DAYS_IN_YEAR / size);
+		return risk * Math.sqrt(DAYS_IN_YEAR);
 	}
 
 	public static LocalDate intToLocalDate(int date) {

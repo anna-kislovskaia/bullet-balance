@@ -10,7 +10,7 @@ export class AppComponent extends Component<AppComponentProps, {}> {
         return (
             <div className="container-fluid">
                 <div className="row">
-                    <h1>Markowitz Tangent Portfolio Calculator</h1>
+                    <h1>Portfolio Balancer</h1>
                 </div>
                 <div className="row">
                     <TangentPortfolioContainer />

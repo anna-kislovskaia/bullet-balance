@@ -43,8 +43,7 @@ public class MoexFundamentalsRepository {
 
     @PostConstruct
     private void init() {
-        loadFundamentals(fundamentalsUrl + "?field=p_e", priceToEarnings);
-        loadFundamentals(fundamentalsUrl + "?field=p_bv", priceToBookValue);
+        loadFundamentals(fundamentalsUrl);
         log.info("Fundamentals loaded");
     }
 
@@ -55,33 +54,65 @@ public class MoexFundamentalsRepository {
         });
     }
 
-    private void loadFundamentals(String url, Map<String, BigDecimal> result) {
+    private void loadFundamentals(String url) {
         try {
             ResponseEntity<String> response = httpsRestTemplate.exchange(url, HttpMethod.GET, null, String.class);
             //log.info(response);
             if (response.getStatusCode().is2xxSuccessful()) {
                 Document document = Jsoup.parse(response.getBody());
-                Element table = document.selectFirst("table.trades-table");
-                Elements rows = table.select("tr");
-                rows.forEach(row -> {
-                    Elements cells = row.select("td");
-                    if (cells.size() < 5) {
-                        return;
-                    }
-                    String link = cells.get(2).selectFirst("a").attr("href");
-                    String symbol = link.substring(link.lastIndexOf(".") + 1).trim();
-                    if (symbol.isEmpty()) {
-                        link = cells.get(1).selectFirst("a").attr("href");
-                        symbol = link.substring(link.lastIndexOf("/") + 1).trim();
-                    }
-                    String text = cells.get(4).selectFirst("strong").text().trim();
-                    BigDecimal value = BigDecimal.valueOf(Double.parseDouble(text));
-                    result.put(symbol, value);
-                    log.info("{} -> {}", symbol, value);
-                });
+                Elements tables = document.select("table.trades-table");
+                tables.forEach(this::loadFundamentals);
             }
         } catch (RestClientException e) {
             log.error("Unable to load fundamentals", e);
+        }
+    }
+
+    private void loadFundamentals(Element table) {
+        Elements headers = table.select("th");
+        int pe_index = -1;
+        int pb_index = -1;
+        for (int i = 0; i < headers.size(); i++) {
+            String text = headers.get(i).text().trim();
+            switch (text) {
+                case "P/E":
+                   pe_index = i;
+                   break;
+                case "P/B":
+                    pb_index = i;
+                    break;
+            }
+        }
+        Elements rows = table.select("tr");
+        for (int i = 0; i < rows.size(); i++) {
+            Elements cells = rows.get(i).select("td");
+            if (cells.isEmpty()) {
+                continue;
+            }
+            String link = cells.get(2).selectFirst("a").attr("href");
+            String symbol = link.substring(link.lastIndexOf(".") + 1).trim();
+            if (symbol.isEmpty()) {
+                link = cells.get(1).selectFirst("a").attr("href");
+                symbol = link.substring(link.lastIndexOf("/") + 1).trim();
+            }
+            loadFundamental(symbol, pe_index, cells, priceToEarnings);
+            loadFundamental(symbol, pb_index, cells, priceToBookValue);
+            log.info("{} P/E={} P/B={}", symbol, priceToEarnings.get(symbol), priceToBookValue.get(symbol));
+        }
+    }
+
+    private void loadFundamental(String symbol, int index, Elements cells, Map<String, BigDecimal> result) {
+        if (index < 0 || index >= cells.size()) {
+            return;
+        }
+        String text = cells.get(index).text().trim();
+        try {
+            if (!text.isEmpty()) {
+                BigDecimal value  = BigDecimal.valueOf(Double.parseDouble(text));
+                result.put(symbol, value);
+            }
+        } catch (NumberFormatException e) {
+            log.error("Cannot parse fundamental for "+ symbol, e);
         }
     }
 

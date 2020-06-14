@@ -2,7 +2,6 @@ import { RxProperties, rxComponentFactory} from "../../utils/rx.utils";
 import {
     TangentPortfolioChartComponent,
     TangentPortfolioChartProps,
-    PortfolioData
 } from "./tangent-portoflio-chart.component";
 import {TChartData, ChartSeriesType, TRangeChartPoint, TNumberChartPoint} from "@bullet-balance/components";
 import {MoexDemoService} from "../../services/moex-demo.service";
@@ -86,11 +85,7 @@ const props$: RxProperties<ExternalProperties, TangentPortfolioChartProps> = (pr
             };
         })));
 
-    const portfolios$: Observable<Task<PortfolioData>> = data$.pipe(map(task => task.map(data => {
-        return {tangent: data.tangent, lowest: data.lowest};
-    })));
-
-    return combineLatest(chartData$, portfolios$).pipe(map(([chartData, portfolios]) => {
+    return combineLatest(chartData$, data$).pipe(map(([chartData, portfolios]) => {
         return {chartData, portfolios}
     }));
 };

@@ -52,12 +52,8 @@ public class MoexPriceRepository {
             loadPrices(instrumentProfile, startDate, LocalDate.now());
         } else {
             LocalDate earliest = prices.firstKey();
-            LocalDate latest = prices.lastKey();
             if (startDate.isBefore(earliest)) {
                 loadPrices(instrumentProfile, startDate, earliest);
-            }
-            if (endDate.isAfter(latest) && latest.isBefore(LocalDate.now())) {
-                loadPrices(instrumentProfile, latest, LocalDate.now());
             }
         }
         return new HashMap<>(prices.subMap(startDate, true, endDate, true));
