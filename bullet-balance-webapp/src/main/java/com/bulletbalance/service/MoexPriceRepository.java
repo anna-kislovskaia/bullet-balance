@@ -2,6 +2,9 @@ package com.bulletbalance.service;
 
 import com.bulletbalance.utils.PortfolioUtils;
 import com.google.common.base.Preconditions;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,21 +48,29 @@ public class MoexPriceRepository {
         MoexInstrumentProfile instrumentProfile = instrumentService.getProfile(ticker);
         NavigableMap<LocalDate, Double> prices = getPrices(ticker);
         // check if data loaded
-        LocalDate earliest = prices.isEmpty() ?  null : prices.firstKey();
-        if (earliest == null) {
+        if (prices.isEmpty()) {
             loadPrices(instrumentProfile, startDate, LocalDate.now());
-        } else if (startDate.isBefore(earliest)) {
-            loadPrices(instrumentProfile, startDate, earliest);
+        } else {
+            LocalDate earliest = prices.firstKey();
+            if (startDate.isBefore(earliest)) {
+                loadPrices(instrumentProfile, startDate, earliest);
+            }
         }
         return new HashMap<>(prices.subMap(startDate, true, endDate, true));
+    }
+
+    public Double getLast(String ticker) {
+        NavigableMap<LocalDate, Double> prices = getPrices(ticker);
+        return prices.isEmpty() ? null : prices.lastEntry().getValue();
     }
 
     private void loadPrices(MoexInstrumentProfile profile, LocalDate startDate, LocalDate toDate) {
         try {
             while (true) {
                 long timestamp = requestTimestamp.get();
-                long delay = Math.max(timestamp + MIN_REQUEST_INTERVAL - System.currentTimeMillis(), 0);
-                if (requestTimestamp.compareAndSet(timestamp, timestamp + MIN_REQUEST_INTERVAL)) {
+                long now = System.currentTimeMillis();
+                long delay = Math.max(timestamp + MIN_REQUEST_INTERVAL - now, 0);
+                if (requestTimestamp.compareAndSet(timestamp, Math.max(now, timestamp) + MIN_REQUEST_INTERVAL)) {
                     scheduler.schedule(() -> loadPricesImpl(profile, startDate, toDate), delay, TimeUnit.MILLISECONDS).get();
                     break;
                 }

@@ -87,7 +87,7 @@ export class TangentPortfolioComponent extends Component<TangentPortfolioCompone
     render() {
         const selectOptions: SelectionOption[] = this.props.instruments
         .map(instruments => instruments.map(instrument => 
-            {return {value: instrument.ticker, label: `${instrument.ticker} (${instrument.name})`}})).getOrElse([]);
+            {return {value: instrument.ticker, label: `${instrument.ticker} (${instrument.name})`}})).optional().getOrElse([]);
         return (
             <form className="container-fluid">
                 <div className="row">
