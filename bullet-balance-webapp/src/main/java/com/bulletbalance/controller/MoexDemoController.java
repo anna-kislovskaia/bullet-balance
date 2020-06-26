@@ -6,16 +6,13 @@ import com.bulletbalance.model.TangentPortfolioAnalytics;
 import com.bulletbalance.portfolio.Portfolio;
 import com.bulletbalance.service.MoexInstrumentService;
 import com.bulletbalance.service.MoexPortfolioService;
+import com.bulletbalance.service.MoexPriceRepository;
 import com.bulletbalance.service.PortfolioAllocationService;
 import com.bulletbalance.utils.PortfolioUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +27,8 @@ public class MoexDemoController {
     private MoexPortfolioService portfolioService;
     @Autowired
     private MoexInstrumentService instrumentService;
+    @Autowired
+    private MoexPriceRepository priceRepository;
 
     @GetMapping(value = "/sample", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public TangentPortfolioAnalytics getSampleAllocations(@RequestParam Optional<Integer> sampleCount,
@@ -56,5 +55,10 @@ public class MoexDemoController {
     @GetMapping(value = "/instruments", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<InstrumentProfile> getInstruments() {
         return instrumentService.getInstruments();
+    }
+
+    @PutMapping(value = "/prices/refresh", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public void refereshPrices() {
+        priceRepository.refreshPrices();
     }
 }

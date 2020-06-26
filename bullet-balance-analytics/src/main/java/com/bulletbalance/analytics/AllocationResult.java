@@ -1,5 +1,6 @@
 package com.bulletbalance.analytics;
 
+import com.bulletbalance.portfolio.AggregationPeriod;
 import com.bulletbalance.utils.PortfolioUtils;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sun.istack.internal.NotNull;
@@ -46,10 +47,10 @@ public class AllocationResult {
 				'}';
 	}
 
-	public AllocationResult annualize(double size) {
+	public AllocationResult annualize(AggregationPeriod period) {
 		return new AllocationResult(
 				weights,
-				PortfolioUtils.convertDailyRateToAnnual(weightedReturn),
-				PortfolioUtils.convertDailyRiskToAnnual(weighthedRisk, size));
+				PortfolioUtils.convertDailyRateToAnnual(weightedReturn, period),
+				PortfolioUtils.convertDailyRiskToAnnual(weighthedRisk, period));
 	}
 }

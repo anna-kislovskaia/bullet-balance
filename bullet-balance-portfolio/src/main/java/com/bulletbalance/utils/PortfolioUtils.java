@@ -1,5 +1,7 @@
 package com.bulletbalance.utils;
 
+import com.bulletbalance.portfolio.AggregationPeriod;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -8,8 +10,6 @@ import java.time.LocalDate;
  *         Date: 01.09.2017
  */
 public class PortfolioUtils {
-
-	private static final int DAYS_IN_YEAR = 365;
 
 	public static void checkWeightsTotal(BigDecimal[] weights) {
 		BigDecimal totalWeight = BigDecimal.ZERO;
@@ -24,16 +24,16 @@ public class PortfolioUtils {
 		}
 	}
 
-	public static double convertAnnualRateToDaily(double annualRate) {
-		return Math.pow(1 + annualRate, 1.0/DAYS_IN_YEAR) - 1;
+	public static double convertAnnualRateToDaily(double annualRate, AggregationPeriod aggregationPeriod) {
+		return Math.pow(1 + annualRate, 1.0/aggregationPeriod.getPeriodsInYear()) - 1;
 	}
 
-	public static double convertDailyRateToAnnual(double dailyRate) {
-		return Math.pow(1 + dailyRate, DAYS_IN_YEAR) - 1;
+	public static double convertDailyRateToAnnual(double dailyRate, AggregationPeriod aggregationPeriod) {
+		return Math.pow(1 + dailyRate, aggregationPeriod.getPeriodsInYear()) - 1;
 	}
 
-	public static double convertDailyRiskToAnnual(double risk, double size) {
-		return risk * Math.sqrt(DAYS_IN_YEAR);
+	public static double convertDailyRiskToAnnual(double risk, AggregationPeriod aggregationPeriod) {
+		return risk * Math.sqrt(aggregationPeriod.getPeriodsInYear());
 	}
 
 	public static LocalDate intToLocalDate(int date) {

@@ -4,6 +4,7 @@ import com.bulletbalance.analytics.AllocationResult;
 import com.bulletbalance.analytics.AllocationResultSelector;
 import com.bulletbalance.analytics.LeastRiskyAllocationSelector;
 import com.bulletbalance.analytics.TangentPortfolioSelector;
+import com.bulletbalance.portfolio.AggregationPeriod;
 import com.bulletbalance.portfolio.Portfolio;
 import com.bulletbalance.random.NoShortSellWeightsGenerator;
 import com.bulletbalance.utils.PortfolioUtils;
@@ -22,7 +23,7 @@ public class DemoLauncher {
 	private static final Map<String, AllocationResultSelector> processors = new LinkedHashMap<>();
 	static {
 		processors.put("Least risky", new LeastRiskyAllocationSelector());
-		processors.put("Markowitz tangent portfolio", new TangentPortfolioSelector(PortfolioUtils.convertAnnualRateToDaily(0.05)));
+		processors.put("Markowitz tangent portfolio", new TangentPortfolioSelector(PortfolioUtils.convertAnnualRateToDaily(0.05, AggregationPeriod.DAY)));
 	}
 
 	public static void main(String[] args) {
@@ -43,7 +44,7 @@ public class DemoLauncher {
 		if (result == null) {
 			System.out.println(String.format("%s produced no results", dislayName));
 		} else {
-			double annualRate = PortfolioUtils.convertDailyRateToAnnual(result.getWeightedReturn());
+			double annualRate = PortfolioUtils.convertDailyRateToAnnual(result.getWeightedReturn(), AggregationPeriod.DAY);
 
 			System.out.println(String.format("%s allocation is %s, annual return %f", dislayName, result.toString(), annualRate));
 			System.out.println(portfolio.getAssetKeys());

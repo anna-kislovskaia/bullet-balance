@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 public class PortfolioBuilder<K extends Comparable<K>> {
 	private Map<K, double[]> prices = new HashMap<>();
 	private int count;
+	private AggregationPeriod aggregationPeriod;
 
 	/**
 	 * Registers price history
@@ -36,7 +37,14 @@ public class PortfolioBuilder<K extends Comparable<K>> {
 		prices.put(assetKey, assetPrices);
 	}
 
+	public void setAggregationPeriod(AggregationPeriod aggregationPeriod) {
+		this.aggregationPeriod = aggregationPeriod;
+	}
+
 	public Portfolio<K> build() {
+		if (aggregationPeriod == null) {
+			throw new IllegalArgumentException("Aggregation period is required");
+		}
 		Collection<Integer> invalidIndexes = new HashSet<>();
 		for (double[] assetPrices : prices.values()) {
 			for (int i = 0; i < assetPrices.length; i++) {
@@ -52,7 +60,7 @@ public class PortfolioBuilder<K extends Comparable<K>> {
 					return AssetProfile.create(assetKey, reduced);
 				})
 				.collect(Collectors.toList());
-		return new Portfolio<>(profiles);
+		return new Portfolio<>(profiles, aggregationPeriod);
 	}
 
 	private static double[] reducePriceHistory(double[] rawPrices, Collection<Integer> invalidIndexes) {

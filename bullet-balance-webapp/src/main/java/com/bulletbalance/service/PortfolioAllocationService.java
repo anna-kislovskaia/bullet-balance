@@ -40,7 +40,7 @@ public class PortfolioAllocationService {
         analyzer.setPortfolio(portfolio);
         List<AllocationResult> samples = analyzer.generate()
                 .stream()
-                .map(allocationResult -> allocationResult.annualize(portfolio.getSize()))
+                .map(allocationResult -> allocationResult.annualize(portfolio.getAggregationPeriod()))
                 .collect(Collectors.toList());
         AllocationResult lowestRisk = LOWEST_RISK_SELECTOR.selectResult(samples);
         log.info("Lowest risk porfolio {}", lowestRisk);
