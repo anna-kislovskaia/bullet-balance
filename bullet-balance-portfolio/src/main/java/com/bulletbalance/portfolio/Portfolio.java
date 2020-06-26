@@ -23,14 +23,16 @@ public class Portfolio<K extends Comparable<K>> {
 	private final List<K> orderedKeys;
 	private final HashMap<K, Integer> assetIndexes = new HashMap<>();
 	private final int size;
+	private final AggregationPeriod aggregationPeriod;
 	private double[][] correlationMatrix;
 	private Map<AssetKeyPair<K>, PairVariance<K>> pairs = new HashMap<>();
 
-	public Portfolio(Collection<AssetProfile<K>> sources) {
+	public Portfolio(Collection<AssetProfile<K>> sources, AggregationPeriod period) {
 		if (sources.isEmpty()) {
 			throw new IllegalArgumentException("Data sources expected");
 		}
 		size = sources.iterator().next().getCount();
+		aggregationPeriod = period;
 		for (AssetProfile<K> profile: sources) {
 			if (size != profile.getCount()) {
 				throw new IllegalArgumentException("All assets must have the same size of trade history");
@@ -55,6 +57,10 @@ public class Portfolio<K extends Comparable<K>> {
 
 	public AssetProfile<K> getProfile(K key) {
 		return profiles.get(key);
+	}
+
+	public AggregationPeriod getAggregationPeriod() {
+		return aggregationPeriod;
 	}
 
 	/**

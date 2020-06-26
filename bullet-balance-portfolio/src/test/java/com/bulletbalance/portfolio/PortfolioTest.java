@@ -110,8 +110,8 @@ public class PortfolioTest {
 	@Test
 	public void testRatesConversion() {
 		double annualRate = 0.05;
-		double dailyRate = PortfolioUtils.convertAnnualRateToDaily(annualRate);
-		double restoredAnnualRate = PortfolioUtils.convertDailyRateToAnnual(dailyRate);
+		double dailyRate = PortfolioUtils.convertAnnualRateToDaily(annualRate, AggregationPeriod.DAY);
+		double restoredAnnualRate = PortfolioUtils.convertDailyRateToAnnual(dailyRate, AggregationPeriod.DAY);
 		Assert.assertEquals("Annual rate", annualRate, restoredAnnualRate, 0.0005);
 	}
 
