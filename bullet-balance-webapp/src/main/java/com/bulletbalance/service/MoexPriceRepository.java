@@ -2,9 +2,6 @@ package com.bulletbalance.service;
 
 import com.bulletbalance.utils.PortfolioUtils;
 import com.google.common.base.Preconditions;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,16 +44,33 @@ public class MoexPriceRepository {
         Preconditions.checkArgument(startDate.isBefore(endDate), "Start date must be before end date");
         MoexInstrumentProfile instrumentProfile = instrumentService.getProfile(ticker);
         NavigableMap<LocalDate, Double> prices = getPrices(ticker);
+        // correct end date
+        LocalDate fromDate = LocalDate.of(startDate.getYear(), 1, 1);
         // check if data loaded
         if (prices.isEmpty()) {
-            loadPrices(instrumentProfile, startDate, LocalDate.now());
+            loadPrices(instrumentProfile, fromDate, LocalDate.now());
         } else {
             LocalDate earliest = prices.firstKey();
             if (startDate.isBefore(earliest)) {
-                loadPrices(instrumentProfile, startDate, earliest);
+                loadPrices(instrumentProfile, fromDate, earliest);
             }
         }
         return new HashMap<>(prices.subMap(startDate, true, endDate, true));
+    }
+
+    public void refreshPrices() {
+        instrumentPrices.keySet().forEach(symbol -> {
+            NavigableMap<LocalDate, Double> prices = getPrices(symbol);
+            MoexInstrumentProfile instrumentProfile = instrumentService.getProfile(symbol);
+            LocalDate today = LocalDate.now();
+            if (prices.isEmpty()) {
+                LocalDate fromDate = LocalDate.of(today.getYear(), 1, 1);
+                loadPrices(instrumentProfile, fromDate, today);
+            } else {
+                LocalDate last = prices.lastKey();
+                loadPrices(instrumentProfile, last, today);
+            }
+        });
     }
 
     public Double getLast(String ticker) {
@@ -80,10 +94,11 @@ public class MoexPriceRepository {
         }
     }
 
-    private void loadPricesImpl(MoexInstrumentProfile profile, LocalDate startDate, LocalDate toDate) {
-        // correct to year start
-        LocalDate fromDate = LocalDate.of(startDate.getYear(), 1, 1);
+    private void loadPricesImpl(MoexInstrumentProfile profile, LocalDate fromDate, LocalDate toDate) {
         String ticker = profile.getTicker();
+        if (fromDate.isAfter(toDate)) {
+            return;
+        }
         log.info("Loading {} daily close {}-{} ", ticker, fromDate, toDate);
         String url = new StringBuilder()
                 .append("http://")
