@@ -9,6 +9,7 @@ import { TTangentPortfolio } from '../../model/data.model';
 export interface TangentPortfolioChartProps {
     chartData: Task<TChartData>;
     portfolios: Task<TTangentPortfolio>;
+    investments: number;
     width: number;
     height: number;
     startDate?: Date;
@@ -32,7 +33,7 @@ function taskRenderer<T>(task: Task<T>, resultRenderer: ResultRenderer<T>): JSX.
 
 export class TangentPortfolioChartComponent extends Component<TangentPortfolioChartProps, {}> {
     render() {
-        const { chartData, portfolios, width, height } = this.props;
+        const { chartData, portfolios, width, height, investments } = this.props;
         return (
             <div>
                 {taskRenderer(portfolios, (data) => {
@@ -41,7 +42,8 @@ export class TangentPortfolioChartComponent extends Component<TangentPortfolioCh
                     return <h3>Tangent Portfolio: <span>{performance}% </span> at risk <span>{risk}% </span></h3>
                 })}
                 {taskRenderer(chartData, (result) => <XYChartComponent chartData={result} width={width} height={height}/>)}
-                {portfolios.optional().getNullable() && <TangentPortfolioAllocationComponent data={portfolios.optional().getNullable()} />}
+                {portfolios.optional().getNullable() && 
+                    <TangentPortfolioAllocationComponent data={portfolios.optional().getNullable()} investments={investments}/>}
             </div>
         );
     }
