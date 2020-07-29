@@ -9,6 +9,7 @@ import {distinctUntilChanged, map, shareReplay, switchMap} from "rxjs/internal/o
 import {TPoint} from "../../model/data.model";
 import {Task, TaskUtils} from "../../utils/task.model";
 import {Observable, combineLatest} from "rxjs/index";
+import { PortfolioAllocationService } from "../../services/portfolio-allocation.service";
 
 type ExternalProperties = 'width' | 'height' | 'samplesCount' | 'baseRate' | 'tickers' | 'startDate' | 'endDate';
 
@@ -85,8 +86,9 @@ const props$: RxProperties<ExternalProperties, TangentPortfolioChartProps> = (pr
             };
         })));
 
-    return combineLatest(chartData$, data$).pipe(map(([chartData, portfolios]) => {
-        return {chartData, portfolios}
+        const investments$ = PortfolioAllocationService.getInvestments();    
+        return combineLatest(chartData$, data$, investments$).pipe(map(([chartData, portfolios, investments]) => {
+        return {chartData, portfolios, investments}
     }));
 };
 
