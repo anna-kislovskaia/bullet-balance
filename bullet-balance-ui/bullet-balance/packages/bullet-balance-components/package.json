@@ -29,7 +29,7 @@
     "compile": "tsc",
     "ts:watch": "tsc -w",
     "copy:styles": "copyfiles -u 1 src/**/*.scss dist",
-    "styles:watch": "onchange -v \"src/**/*.scss\" -- npm run copy:styles",
+    "styles:watch": "onchange --await-write-finish 2000 \"src/**/*.scss\" -- npm run copy:styles",
     "portfolio:start": "concurrently npm:ts:watch npm:styles:watch"    
   }
 }
