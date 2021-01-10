@@ -47,7 +47,7 @@ export function TangentPortfolioAllocationComponent(props: TangentPortfolioAlloc
             <thead>
                 <tr>
                     <th scope="col">Ticker</th>
-                    {headers.map(header => (<th key={header} scope="col">{header}</th>))}
+                    {headers.map((header, idx) => (<th key={`header-${idx}`} scope="col">{header}</th>))}
                 </tr>
             </thead>
             <tbody>

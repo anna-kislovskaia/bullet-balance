@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Component } from 'react';
 import { TChartData, TChartSeries, ChartSeriesType } from "./chart.model";
 import { ComposedChart, XAxis, YAxis, Line, Legend, CartesianGrid, Tooltip, Area } from "recharts";
+import './chart.component.scss';
 
 export interface XYChartProps {
     chartData: TChartData,
@@ -37,6 +38,7 @@ export class XYChartComponent extends Component<XYChartProps, {}> {
         const data = convertChartData(chartData);
 
         return (
+            <div className="chart">
                 <ComposedChart  width={600} height={300} data={data}>
                     <XAxis type="number" dataKey={X_AXIS_KEY}/>
                     <YAxis type="number" />
@@ -46,6 +48,7 @@ export class XYChartComponent extends Component<XYChartProps, {}> {
                     {chartData.series.map(entity => this.renderPlot(entity))}
                     {children}
                 </ComposedChart >
+            </div>
         );
     }
 

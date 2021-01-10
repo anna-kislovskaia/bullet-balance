@@ -20,10 +20,16 @@
     "@types/react-dom": "16.9.7",
     "@types/recharts": "1.8.10",
     "@types/webpack-env": "1.15.2",
-    "typescript": "3.8.3"
+    "typescript": "3.8.3",
+    "onchange": "7.1.0",
+    "concurrently": "4.1.0",
+    "copyfiles": "2.4.1"
   },
   "scripts": {
     "compile": "tsc",
-    "portfolio:start": "tsc -w"
+    "ts:watch": "tsc -w",
+    "copy:styles": "copyfiles -u 1 src/**/*.scss dist",
+    "styles:watch": "onchange -v \"src/**/*.scss\" -- npm run copy:styles",
+    "portfolio:start": "concurrently npm:ts:watch npm:styles:watch"    
   }
 }
